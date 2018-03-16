@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from .livestream import LiveStreamHandler
+from .livestream import MatchLiveStreamHandler
 from .main import MainHandler
 
-__all__ = ['LiveStreamHandler', 'MainHandler']
+__all__ = ['MatchLiveStreamHandler', 'MainHandler']

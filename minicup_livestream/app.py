@@ -3,13 +3,14 @@ import os.path
 
 import tornado.web
 
-from .handlers import LiveStreamHandler, MainHandler
+from .handlers import MatchLiveStreamHandler, MainHandler
 
 
 class Application(tornado.web.Application):
     handlers = [
         (r'/', MainHandler),
-        (r'/socket', LiveStreamHandler),
+
+        (r'/ws/match-live/(\d+)', MatchLiveStreamHandler),
     ]
 
     def __init__(self):

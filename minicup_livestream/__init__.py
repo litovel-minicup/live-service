@@ -1,5 +1,5 @@
 # coding=utf-8
 
-from .conf import configure
+from .conf import configure_django
 
-configure()
+configure_django()

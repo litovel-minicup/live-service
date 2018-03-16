@@ -5,7 +5,7 @@ def configure_django():
     import django
     from django.conf import settings as django_settings
 
-    from minicup import settings
+    from minicup_administration.minicup import settings
 
     django_settings.configure(settings)
     django.setup()

@@ -1,8 +1,6 @@
 # coding=utf-8
 import logging
 
-from tornado.ioloop import PeriodicCallback
-
 from minicup_administration.core.models import Match
 from .base import BaseWebsocketJsonHandler
 
@@ -10,9 +8,6 @@ from .base import BaseWebsocketJsonHandler
 class MatchLiveStreamHandler(BaseWebsocketJsonHandler):
     def __init__(self, application, request, **kwargs):
         super().__init__(application, request, **kwargs)
-
-        self._status_controller = PeriodicCallback(self.ping_data, 2000.)
-        self._status_controller.start()
 
         self._match_id = None
 
@@ -23,7 +18,7 @@ class MatchLiveStreamHandler(BaseWebsocketJsonHandler):
     def open(self, match_id, *args, **kwargs):
         self._match_id = match_id
         match = Match.objects.get(pk=self._match_id)
-        logging.info('Params: {}'.format(match))
+        logging.info('OPEN: {}'.format(match))
 
         self.write_json(dict(
             match_id=match.id,
@@ -34,14 +29,8 @@ class MatchLiveStreamHandler(BaseWebsocketJsonHandler):
         ))
 
     def on_close(self):
-        pass
+        logging.info('CLOSE:')
 
     def on_message(self, message):
         logging.info("got message %r", message)
         self.write_json(dict(success=True))
-
-    def on_pong(self, data):
-        logging.info("pong %r", data)
-
-    def ping_data(self):
-        self.ping(bytes(str(self._match_id), encoding='utf-8'))

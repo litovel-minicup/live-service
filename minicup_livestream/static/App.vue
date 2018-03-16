@@ -1,5 +1,5 @@
 <template>
-    <div class="container" id="vue-app" v-cloak>
+    <div class="container">
         <match-header/>
 
         <hr class="hr">
@@ -22,9 +22,7 @@
         <hr class="hr">
         <div class="row mt-4 justify-content-center">
             <div class="col-12">
-                <div class="events">
-                    <events-list/>
-                </div>
+                <match-events/>
             </div>
         </div>
 
@@ -66,8 +64,8 @@
 </template>
 
 <script>
-    import EventsList from './events-list'
-    import MatchHeader from './match-header'
+    import MatchEvents from './components/MatchEvents'
+    import MatchHeader from './components/MatchHeader'
 
     export default {
         name: 'app',
@@ -75,7 +73,7 @@
             return {}
         },
         components: {
-            EventsList,
+            MatchEvents,
             MatchHeader
         },
         methods: {
@@ -89,15 +87,6 @@
 <style>
     body {
         overflow-y: scroll;
-    }
-
-    .events {
-        overflow-y: scroll;
-        /* height: 30 vh; */
-    }
-
-    .team-name {
-        font-size: 2em;
     }
 
     .btn-score {

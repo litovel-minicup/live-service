@@ -58,5 +58,7 @@
 </script>
 
 <style scoped>
-
+    .team-name {
+        font-size: 2em;
+    }
 </style>

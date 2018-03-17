@@ -10,7 +10,7 @@
             >
                 <span class="d-flex align-items-center">
                     <strong class="player-number display-4 text-right mr-2">
-                        {{ player.number | playerNumber(2) }}
+                        {{ player.number.pad(2) }}
                     </strong>
                     <strong class="mr-2">
                         {{ player.surname }}
@@ -31,12 +31,6 @@
     export default {
         name: "player-selector",
         props: ['players', 'name'],
-        filters: {
-            playerNumber(number, size) {
-                let sign = Math.sign(number) === -1 ? '-' : '';
-                return sign + new Array(size).concat([Math.abs(number)]).join('0').slice(-size);
-            }
-        },
         methods: {
             show() {
                 this.$refs.modal.show()

@@ -1,9 +1,13 @@
 <template>
-    <ul class="list-group">
-        <li class="list-group-item list-group-item-action" @click="setMatch(m.id)" v-for="m in nearestMatches">
+    <b-list-group class="list-group">
+        <b-list-group-item href="#"
+                @click="setMatch(m.id)"
+                v-for="m in nearestMatches"
+                :key="m.id"
+        >
             {{ m.name }}
-        </li>
-    </ul>
+        </b-list-group-item>
+    </b-list-group>
 </template>
 
 <script>

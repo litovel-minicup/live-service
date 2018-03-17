@@ -20,7 +20,7 @@
         <hr class="hr">
         <div class="row mt-4 justify-content-center">
             <div class="col-12">
-                <match-events/>
+                <match-events :events="events"/>
             </div>
         </div>
 
@@ -33,6 +33,7 @@
     import MatchHeader from './MatchHeader'
     import MatchEvents from './MatchEvents'
     import PlayerSelector from './PlayerSelector'
+    import {mapState} from 'vuex'
 
     export default {
         name: "match-detail",
@@ -42,13 +43,16 @@
             PlayerSelector,
         },
         computed: {
-            match() {
-                return this.$store.state.match;
-            }
+            ...mapState([
+                'match',
+                'events'
+            ]),
+
         },
 
         beforeMount() {
             this.$store.dispatch('loadMatch', {match: this.$store.state.route.params.match});
+            this.$store.dispatch('loadEvents', {match: this.$store.state.route.params.match})
         }
     }
 </script>

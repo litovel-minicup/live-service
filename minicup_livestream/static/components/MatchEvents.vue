@@ -13,7 +13,13 @@
 <script>
     export default {
         name: "events-list",
-        props: ['events']
+        props: ['events'],
+
+        filters: {
+            prettyTime(secs) {
+                return Math.floor(secs / 60).pad(2) + ':' + (secs % 60).pad(2);
+            }
+        },
     }
 </script>
 

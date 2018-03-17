@@ -28,6 +28,13 @@ const store = new Vuex.Store({
                 // TODO: error
             });
         },
+        loadEvents(context, {match}) {
+            Vue.http.get('/api/match-events/' + match.toString()).then(response => {
+                this.commit('setEvents', response.body.events);
+            }, response => {
+                // TODO: error
+            });
+        },
     },
     state: {
         lastData: null,
@@ -40,7 +47,8 @@ const store = new Vuex.Store({
         categories: [],
         category: null,
 
-        match: {}
+        match: {},
+        events: [],
     },
     mutations: {
         setCategories(state, cats) {
@@ -54,6 +62,9 @@ const store = new Vuex.Store({
         },
         setMatch(state, match) {
             state.match = match
+        },
+        setEvents(state, events) {
+            state.events = events
         },
 
         SOCKET_ONOPEN(state, event) {
@@ -79,6 +90,8 @@ const store = new Vuex.Store({
             state.socket.reconnectError = true;
         },
     },
+    strict: true
+
 });
 
 

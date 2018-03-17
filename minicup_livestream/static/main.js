@@ -8,7 +8,6 @@ import VueResource from 'vue-resource'
 
 import App from './App.vue'
 import router from './router'
-
 import store from './store/store'
 
 
@@ -22,6 +21,10 @@ Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 sync(store, router);
 
+Number.prototype.pad = function (size) {
+    let sign = Math.sign(this) === -1 ? '-' : '';
+    return sign + new Array(size).concat([Math.abs(this)]).join('0').slice(-size);
+};
 
 const app = new Vue({
     el: '#app',

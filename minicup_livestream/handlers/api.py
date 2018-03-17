@@ -46,3 +46,19 @@ class MatchHandler(RequestHandler):
             home_team_players=players(match.home_team_info),
             away_team_players=players(match.away_team_info),
         ))
+
+
+class MatchEventsHandler(RequestHandler):
+    def get(self, match_id):
+        match = get_object_or_404(Match, pk=match_id)
+
+        self.write(dict(
+            events=[
+                dict(
+                    id=me.id,
+                    timeOffset=me.time_offset,
+                    message=me.message
+                )
+                for me in match.match_match_event.all()
+            ]
+        ))

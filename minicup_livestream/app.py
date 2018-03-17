@@ -4,7 +4,7 @@ from os.path import dirname
 
 import tornado.web
 
-from minicup_livestream.handlers.api import CategoryListHandler, MatchListHandler, MatchHandler
+from minicup_livestream.handlers.api import CategoryListHandler, MatchListHandler, MatchHandler, MatchEventsHandler
 from .handlers import BroadcastHandler, MainHandler
 
 
@@ -17,6 +17,7 @@ class Application(tornado.web.Application):
         (r'/api/category-list', CategoryListHandler),
         (r'/api/category/(\d+)', MatchListHandler),
         (r'/api/match/(\d+)', MatchHandler),
+        (r'/api/match-events/(\d+)', MatchEventsHandler),
 
         (r'/', MainHandler),
     ]

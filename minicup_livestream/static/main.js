@@ -1,7 +1,31 @@
 import Vue from 'vue'
-import App from './App.vue'
+import VueRouter from 'vue-router'
+import VueNativeSock from 'vue-native-websocket'
+import {sync} from 'vuex-router-sync'
+import VueResource from 'vue-resource'
 
-new Vue({
+
+import App from './App.vue'
+import router from './router'
+
+import store from './store/store'
+
+
+Vue.use(VueNativeSock, 'ws://localhost:8888/ws/broadcast', {
+    reconnection: false,
+    format: 'json',
+    store
+});
+Vue.use(VueResource);
+Vue.use(VueRouter);
+sync(store, router);
+
+
+const app = new Vue({
     el: '#app',
+    store,
+    router,
     render: h => h(App)
 });
+
+

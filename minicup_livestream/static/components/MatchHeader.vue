@@ -2,10 +2,10 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-6 text-right team-name" title="Home team">
-                Home team
+                {{ match.home_team_name }}
             </div>
             <div class="col-6 team-name" title="Away team">
-                Away team
+                {{ match.away_team_name }}
             </div>
         </div>
         <div class="row mt-2 justify-content-center">
@@ -36,12 +36,12 @@
 <script>
     export default {
         name: "match-header",
-        props: [],
+        props: ['match'],
         data() {
             return {
                 score: [null, null],
                 playing: false,
-                halfIndex: null,
+                halfIndex: null
             }
         },
         methods: {
@@ -53,11 +53,11 @@
             timeFormatted() {
                 return '00:00'
             }
-        }
+        },
     }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
     .team-name {
         font-size: 2em;
     }

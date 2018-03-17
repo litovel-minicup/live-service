@@ -4,17 +4,21 @@ from os.path import dirname
 
 import tornado.web
 
-from minicup_livestream.handlers.main import MatchHandler
-from .handlers import MatchLiveStreamHandler, MainHandler
+from minicup_livestream.handlers.api import CategoryListHandler, MatchListHandler, MatchHandler
+from .handlers import BroadcastHandler, MainHandler
 
 
 class Application(tornado.web.Application):
     handlers = [
         (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': os.path.join(dirname(__file__), 'static')}),
-        (r'/', MainHandler),
-        (r'/match/(\d+)', MatchHandler),
 
-        (r'/ws/match-live/(\d+)', MatchLiveStreamHandler),
+        (r'/ws/broadcast', BroadcastHandler),
+
+        (r'/api/category-list', CategoryListHandler),
+        (r'/api/category/(\d+)', MatchListHandler),
+        (r'/api/match/(\d+)', MatchHandler),
+
+        (r'/', MainHandler),
     ]
 
     def __init__(self):

@@ -1,36 +1,48 @@
 # coding=utf-8
 import logging
+from json import loads
 
-from minicup_administration.core.models import Match
-from .base import BaseWebsocketJsonHandler
+from tornado.websocket import WebSocketHandler
 
+from minicup_administration.core.models import Player, Match
 
-class MatchLiveStreamHandler(BaseWebsocketJsonHandler):
+class BroadcastHandler(WebSocketHandler):
     def __init__(self, application, request, **kwargs):
         super().__init__(application, request, **kwargs)
-
-        self._match_id = None
 
     def get_compression_options(self):
         # Non-None enables compression with default options.
         return {}
 
-    def open(self, match_id, *args, **kwargs):
-        self._match_id = match_id
-        match = Match.objects.get(pk=self._match_id)
-        logging.info('OPEN: {}'.format(match))
-
-        self.write_json(dict(
-            match_id=match.id,
-            home_team_id=match.home_team_info_id,
-            home_team_name=match.home_team_info.name,
-            away_team_id=match.away_team_info_id,
-            away_team_name=match.away_team_info.name,
-        ))
+    def open(self, *args, **kwargs):
+        logging.info('OPEN:')
 
     def on_close(self):
         logging.info('CLOSE:')
 
     def on_message(self, message):
         logging.info("got message %r", message)
-        self.write_json(dict(success=True))
+
+        data = loads(message)  # type: dict
+        if data.get('action') == 'roster':
+            self.write_message(dict(roster=[
+                dict(
+                    id=p.id,
+                    name=p.name,
+                    surname=p.surname,
+                    number=p.number
+                ) for p in Player.objects.filter(team_info_id=data.get('team_info_id'))
+            ]))
+            return
+
+        if data.get('action') == 'matches':
+            self.write_message(dict(matches=[
+                dict(
+                    id=p.id,
+                    name=str(p)
+                ) for p in Match.objects.filter(category_id=data.get('category_id'))
+            ]))
+            return
+
+
+        self.write_message(dict(success=True, **loads(message)))

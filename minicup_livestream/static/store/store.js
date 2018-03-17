@@ -16,6 +16,7 @@ const store = new Vuex.Store({
         loadMatches(context, {category}) {
             Vue.http.get('/api/category/' + category.toString()).then(response => {
                 this.commit('setMatches', response.body.matches);
+                this.commit('setMatch', {});
             }, response => {
                 // TODO: error
             });

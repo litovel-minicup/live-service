@@ -5,17 +5,15 @@
         <hr class="hr">
 
         <div class="row justify-content-between">
-            <div class="col-6 text-right display-4">
-                <button class="btn btn-primary btn-block btn-lg btn-score" data-toggle="modal"
-                        data-target="#modalHomePlayers">
+            <div class="col-5 text-right display-4">
+                <b-btn size="lg" variant="primary" block class="btn-score" @click="$refs.homeSelector.show()">
                     +1
-                </button>
+                </b-btn>
             </div>
-            <div class="col-6 display-4">
-                <button class="btn btn-warning btn-block btn-lg btn-score" data-toggle="modal"
-                        data-target="#modalAwayPlayers">
+            <div class="col-5 display-4">
+                <b-btn size="lg" variant="warning" block class="btn-score" @click="$refs.awaySelector.show()">
                     +1
-                </button>
+                </b-btn>
             </div>
         </div>
 
@@ -26,52 +24,22 @@
             </div>
         </div>
 
-        <!-- Modal -->
-        <div class="modal" id="modalHomePlayers" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">My team</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body players-list">
-                        <ul class="list-group">
-                            <li class="list-group-item d-flex align-items-center justify-content-between">
-                                <span class="d-flex align-items-center">
-                                    <strong class="player-number display-4 text-right mr-2">
-                                        45
-                                    </strong>
-                                    <strong class="mr-2">
-                                        My
-                                    </strong> Name
-                                </span>
-
-                                <button v-on:click="goal(25)" type="button" class="btn btn-success">⚽
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">zavřít</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        <player-selector ref="homeSelector" :name="match.home_team_name" :players="match.home_team_players"/>
+        <player-selector ref="awaySelector" :name="match.away_team_name" :players="match.away_team_players"/>
     </div>
 </template>
 
 <script>
     import MatchHeader from './MatchHeader'
     import MatchEvents from './MatchEvents'
+    import PlayerSelector from './PlayerSelector'
 
     export default {
         name: "match-detail",
         components: {
             MatchHeader,
             MatchEvents,
+            PlayerSelector,
         },
         computed: {
             match() {

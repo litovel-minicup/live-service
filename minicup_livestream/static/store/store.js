@@ -1,6 +1,7 @@
 import Vuex from 'vuex';
 import Vue from "vue";
-
+import {StateHelper} from 'state-machine'
+import fsm from './fsm'
 
 Vue.use(Vuex);
 const store = new Vuex.Store({
@@ -34,7 +35,7 @@ const store = new Vuex.Store({
             }, response => {
                 // TODO: error
             });
-        },
+        }
     },
     state: {
         lastData: null,
@@ -49,6 +50,9 @@ const store = new Vuex.Store({
 
         match: {},
         events: [],
+
+        time: 0,
+        fsm: fsm
     },
     mutations: {
         setCategories(state, cats) {
@@ -65,6 +69,20 @@ const store = new Vuex.Store({
         },
         setEvents(state, events) {
             state.events = events
+        },
+
+        startTimer(state) {
+            state.fsm.do('start');
+        },
+        connectFsmEvent(state, {name, cb}) {
+            console.log(name, cb);
+            state.fsm.on(event, (...args) => {
+                console.log('callback');
+                cb(...args)
+            });
+        },
+        timerEnd(state) {
+            state.fsm.do('timer');
         },
 
         SOCKET_ONOPEN(state, event) {

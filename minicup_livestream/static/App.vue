@@ -37,13 +37,22 @@
         overflow: auto;
     }
 
-    .players-list {
-        overflow-y: scroll;
-        max-height: 75vh;
+
+
+    .slide-top-enter-active {
+        animation: bounce-in .5s;
     }
 
-    .player-number {
-        font-size: 2rem;
-        font-weight: 300;
+    .slide-top-leave-active {
+        animation: bounce-in .5s reverse;
+    }
+
+    @keyframes bounce-in {
+        0% {
+            transform: translate(0, -500px);
+        }
+        100% {
+            transform: translate(0, 0);
+        }
     }
 </style>

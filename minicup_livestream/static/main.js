@@ -10,7 +10,6 @@ import App from './App.vue'
 import router from './router'
 import store from './store/store'
 
-
 Vue.use(VueNativeSock, 'ws://localhost:8888/ws/broadcast', {
     reconnection: false,
     format: 'json',

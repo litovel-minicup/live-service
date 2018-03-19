@@ -1,18 +1,39 @@
 <template>
-    <b-container>
-        <router-view/>
-    </b-container>
+    <div>
+        <div class="spinner">
+            <spinner :enable="enabled"/>
+        </div>
+        <b-container>
+            <router-view/>
+        </b-container>
+    </div>
 </template>
 
 <script>
+    import Spinner from './components/Spinner'
+
     export default {
         name: 'app',
+        components: {
+            Spinner
+        },
+        computed: {
+            enabled() {
+                return this.$store.state.socket.reconnectError || !this.$store.state.socket.isConnected;
+            }
+        }
     }
 </script>
 
 <style lang="scss">
     body {
         overflow-y: scroll;
+    }
+
+    .spinner {
+        position: fixed;
+        left: calc(100% - 80px);
+        top: 0;
     }
 
     .btn-score {

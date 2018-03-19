@@ -46,7 +46,7 @@ export default {
         state.socket.isConnected = false;
     },
     SOCKET_ONERROR(state, event) {
-        console.error(state, event)
+        state.socket.isConnected = false;
     },
     // default handler called for all methods
     SOCKET_ONMESSAGE(state, data) {
@@ -62,7 +62,7 @@ export default {
     },
     // mutations for reconnect methods
     SOCKET_RECONNECT(state, count) {
-        // console.info(state, count)
+        // attempt to reconnect
     },
     SOCKET_RECONNECT_ERROR(state) {
         state.socket.reconnectError = true;

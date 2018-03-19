@@ -1,9 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
 
-
 module.exports = {
-    entry: ['axios', 'bootstrap-loader', './minicup_livestream/static/main.js'],
+    entry: ['bootstrap-loader', './minicup_livestream/static/main.js'],
     output: {
         path: path.resolve(__dirname, 'minicup_livestream/static/build/'),
         publicPath: '/build/',
@@ -97,8 +96,5 @@ if (process.env.NODE_ENV === 'production') {
                 comments: false
             }
         }),
-        new webpack.LoaderOptionsPlugin({
-            minimize: true
-        })
     ])
 }

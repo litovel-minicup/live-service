@@ -17,12 +17,12 @@ export default {
             // TODO: error
         });
     },
-    openMatch({dispatch}, d) {
-        dispatch('loadMatch', d);
-        dispatch('loadEvents', d);
+    openMatch({dispatch}, data) {
+        dispatch('loadMatch', data);
+        dispatch('loadEvents', data);
         dispatch('sendObj', {
                 action: 'subscribe',
-                ...d
+                ...data
             }
         );
     },

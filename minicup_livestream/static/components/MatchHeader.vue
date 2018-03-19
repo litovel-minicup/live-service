@@ -93,22 +93,21 @@
             this.$store.commit('connectFsmEvent', {
                 event: '(pause end)',
                 cb: (evt, fsm) => {
-                    console.log('stop timer');
                     this.enableTimer = false;
                     this.$emit('stopTimer');
                 },
             });
             const timeoutCb = () => {
-                if (this.enableTimer) {
-                    this.timerCount++;
-                    if (this.timerCount > 10) {
-                        this.$store.dispatch('endHalf').then(() => {
-                            this.timerCount = 0
-                        });
-                    }
+                this.timeoutID = setTimeout(timeoutCb, 1000);
+                if (!this.enableTimer) return;
+
+                this.timerCount++;
+                if (this.timerCount > 10) {
+                    this.$store.dispatch('endHalf').then(() => {
+                        this.timerCount = 0
+                    });
                 }
 
-                this.timeoutID = setTimeout(timeoutCb, 1000);
             };
             this.timeoutID = setTimeout(timeoutCb, 1000);
         },

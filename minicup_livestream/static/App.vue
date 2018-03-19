@@ -7,17 +7,10 @@
 <script>
     export default {
         name: 'app',
-        beforeMount() {
-            this.$socket.onopen = () => {
-                this.$socket.sendObj({
-                    action: 'matches'
-                })
-            }
-        }
     }
 </script>
 
-<style>
+<style lang="scss">
     body {
         overflow-y: scroll;
     }
@@ -35,9 +28,8 @@
     body {
         height: 100%;
         overflow: auto;
+        overflow-y: scroll !important;
     }
-
-
 
     .slide-top-enter-active {
         animation: bounce-in .5s;
@@ -47,12 +39,36 @@
         animation: bounce-in .5s reverse;
     }
 
+    .scale-out-enter-active {
+        animation: scale-out .5s;
+    }
+
+    .scale-out-leave-active {
+        animation: scale-out .5s reverse;
+    }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s;
+    }
+
     @keyframes bounce-in {
         0% {
             transform: translate(0, -500px);
         }
         100% {
             transform: translate(0, 0);
+        }
+    }
+
+    @keyframes scale-out {
+        0% {
+            transform: scale(0, 0);
+        }
+        80% {
+            transform: scale(1.2, 1.2);
+        }
+        100% {
+            transform: scale(1, 1);
         }
     }
 </style>

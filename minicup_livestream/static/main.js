@@ -10,8 +10,13 @@ import App from './App.vue'
 import router from './router'
 import store from './store/store'
 
-Vue.use(VueNativeSock, 'ws://localhost:8888/ws/broadcast', {
-    reconnection: false,
+function createWebSocket(path) {
+    const protocolPrefix = (window.location.protocol === 'https:') ? 'wss:' : 'ws:';
+    return protocolPrefix + '//' + location.host + path;
+}
+
+Vue.use(VueNativeSock, createWebSocket('/ws/broadcast'), {
+    reconnection: true,
     format: 'json',
     store
 });
@@ -20,9 +25,9 @@ Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 sync(store, router);
 
-Number.prototype.pad = function (size) {
+Number.prototype.pad = function (size, char='0') {
     let sign = Math.sign(this) === -1 ? '-' : '';
-    return sign + new Array(size).concat([Math.abs(this)]).join('0').slice(-size);
+    return sign + new Array(size).concat([Math.abs(this)]).join(char).slice(-size);
 };
 
 const app = new Vue({

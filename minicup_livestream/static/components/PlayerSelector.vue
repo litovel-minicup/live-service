@@ -1,13 +1,15 @@
 <template>
-    <b-modal size="lg" id="modal" ref="modal" no-fade>
-        <template slot="modal-title">Hráč z týmu <i>{{ name }}</i></template>
+    <transition name="scale-out">
 
-        <b-list-group class="players-list">
-            <b-list-group-item
-                    v-for="player in players"
-                    :key="player.id"
-                    class="d-flex align-items-center justify-content-between"
-            >
+        <b-modal size="lg" id="modal" ref="modal">
+            <template slot="modal-title">Hráč z týmu <i>{{ name }}</i></template>
+
+            <b-list-group class="players-list">
+                <b-list-group-item
+                        v-for="player in players"
+                        :key="player.id"
+                        class="d-flex align-items-center justify-content-between"
+                >
                 <span class="d-flex align-items-center">
                     <strong class="player-number display-4 text-right mr-2">
                         {{ player.number.pad(2) }}
@@ -17,14 +19,15 @@
                     </strong> {{ player.name }}
                 </span>
 
-                <b-button @click="goal(player)" variant="success">⚽</b-button>
-            </b-list-group-item>
-        </b-list-group>
+                    <b-button @click="goal(player)" variant="success">⚽</b-button>
+                </b-list-group-item>
+            </b-list-group>
 
-        <template slot="modal-footer">
-            <b-button @click="$refs.modal.hide()">zavřít</b-button>
-        </template>
-    </b-modal>
+            <template slot="modal-footer">
+                <b-button @click="$refs.modal.hide()">zavřít</b-button>
+            </template>
+        </b-modal>
+    </transition>
 </template>
 
 <script>

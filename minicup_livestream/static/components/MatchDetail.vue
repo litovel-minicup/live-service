@@ -5,23 +5,9 @@
                 :running.sync="running"
                 @startTimer="running = true"
                 @stopTimer="running = false"
+                @homeGoal="$refs.homeSelector.show()"
+                @awayGoal="$refs.awaySelector.show()"
         />
-
-        <transition name="slide-top">
-            <div class="row justify-content-between" v-if="running">
-                <div class="col-5 text-right display-4">
-                    <b-btn size="lg" variant="primary" block class="btn-score" @click="$refs.homeSelector.show()">
-                        +1
-                    </b-btn>
-                </div>
-                <div class="col-5 display-4">
-                    <b-btn size="lg" variant="warning" block class="btn-score" @click="$refs.awaySelector.show()">
-                        +1
-                    </b-btn>
-                </div>
-            </div>
-        </transition>
-
 
         <hr class="hr">
 
@@ -72,14 +58,24 @@
         },
         methods: {
             goal({player}) {
-                console.log(player)
+                this.$socket.sendObj({
+                    action: 'goal',
+                    match: this.match.id,
+                    player: player,
+                });
             }
         },
         beforeMount() {
             this.$store.dispatch('loadMatch', {match: this.$store.state.route.params.match});
-            this.$store.dispatch('loadEvents', {match: this.$store.state.route.params.match})
-        },
+            this.$store.dispatch('loadEvents', {match: this.$store.state.route.params.match});
 
+            this.$options.sockets.onopen = (context) => {
+                this.$socket.sendObj({
+                    match: this.$store.state.route.params.match,
+                    action: 'subscribe'
+                });
+            };
+        },
     }
 </script>
 

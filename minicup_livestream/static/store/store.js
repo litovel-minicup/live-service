@@ -48,7 +48,9 @@ const store = new Vuex.Store({
         categories: [],
         category: null,
 
-        match: {},
+        match: {
+            score: [0, 0],
+        },
         events: [],
 
         time: 0,
@@ -65,10 +67,13 @@ const store = new Vuex.Store({
             state.category = id
         },
         setMatch(state, match) {
-            state.match = match
+            state.match = _.merge({}, state.match, match);
         },
         setEvents(state, events) {
             state.events = events
+        },
+        addEvent(state, event) {
+            state.events.unshift(event)
         },
 
         startTimer(state) {
@@ -98,7 +103,10 @@ const store = new Vuex.Store({
         },
         // default handler called for all methods
         SOCKET_ONMESSAGE(state, data) {
-            state.lastData = data
+            state.lastData = data;
+            console.log('Message: ', data);
+            this.commit('addEvent', data.event);
+            this.commit('setMatch', data.match);
         },
         // mutations for reconnect methods
         SOCKET_RECONNECT(state, count) {

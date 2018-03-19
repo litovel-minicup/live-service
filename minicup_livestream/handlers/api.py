@@ -27,6 +27,7 @@ class MatchListHandler(RequestHandler):
 
 class MatchHandler(RequestHandler):
     def get(self, match_id):
+        # type: Match
         match = get_object_or_404(Match, pk=match_id)
 
         def players(team_info: TeamInfo):
@@ -39,10 +40,7 @@ class MatchHandler(RequestHandler):
                 ) for p in team_info.team_info_player.all()
             ]
 
-        self.write(dict(
-            id=match.id,
-            home_team_name=match.home_team_info.name,
-            away_team_name=match.away_team_info.name,
+        self.write(match.serialize(
             home_team_players=players(match.home_team_info),
             away_team_players=players(match.away_team_info),
         ))
@@ -54,11 +52,6 @@ class MatchEventsHandler(RequestHandler):
 
         self.write(dict(
             events=[
-                dict(
-                    id=me.id,
-                    timeOffset=me.time_offset,
-                    message=me.message
-                )
-                for me in match.match_match_event.all()
+                me.serialize() for me in match.match_match_event.all()
             ]
         ))

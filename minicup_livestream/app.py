@@ -28,7 +28,7 @@ class Application(tornado.web.Application):
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
             static_path=os.path.join(os.path.dirname(__file__), "static"),
             xsrf_cookies=True,
-            websocket_ping_interval=5,
+            websocket_ping_interval=1,
             debug=True,
         )
         super().__init__(self.handlers, **settings_)

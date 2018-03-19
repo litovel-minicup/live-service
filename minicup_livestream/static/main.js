@@ -20,6 +20,8 @@ Vue.use(VueNativeSock, createWebSocket('/ws/broadcast'), {
     format: 'json',
     store
 });
+store.$socket = Vue.prototype.$socket;
+
 Vue.use(VueResource);
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);

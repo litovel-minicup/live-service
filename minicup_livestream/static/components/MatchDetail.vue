@@ -58,23 +58,17 @@
         },
         methods: {
             goal({player}) {
-                this.$socket.sendObj({
-                    action: 'goal',
-                    match: this.match.id,
-                    player: player,
-                });
+                this.$store.dispatch('goal', {player});
             }
         },
         beforeMount() {
             this.$store.dispatch('loadMatch', {match: this.$store.state.route.params.match});
             this.$store.dispatch('loadEvents', {match: this.$store.state.route.params.match});
-
-            this.$options.sockets.onopen = (context) => {
-                this.$socket.sendObj({
+            this.$store.dispatch('sendObj', {
                     match: this.$store.state.route.params.match,
                     action: 'subscribe'
-                });
-            };
+                }
+            );
         },
     }
 </script>

@@ -72,7 +72,7 @@
         },
         methods: {
             start() {
-                this.$store.commit('startTimer')
+                this.$store.dispatch('startHalf')
             }
         },
         computed: {
@@ -87,19 +87,26 @@
             },
         },
         beforeMount() {
-            this.$store.state.fsm.on('@start', (evt, fsm) => {
-                this.enableTimer = true;
-                this.$emit('startTimer');
+            this.$store.commit('connectFsmEvent', {
+                event: '@start',
+                cb: (evt, fsm) => {
+                    this.enableTimer = true;
+                    this.$emit('startTimer');
+                },
             });
-            this.$store.state.fsm.on('(h e)', (evt, fsm) => {
-                this.enableTimer = false;
-                this.$emit('stopTimer');
+
+            this.$store.commit('connectFsmEvent', {
+                event: '(h e)',
+                cb: (evt, fsm) => {
+                    this.enableTimer = false;
+                    this.$emit('stopTimer');
+                },
             });
             const timeoutCb = () => {
                 if (this.enableTimer)
                     this.timerCount++;
-                if (this.timerCount > 600) {
-                    this.$store.commit('timerEnd');
+                if (this.timerCount > 10) {
+                    this.$store.dispatch('endHalf');
                     this.timerCount = 0;
                 }
 

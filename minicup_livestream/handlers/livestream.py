@@ -35,10 +35,15 @@ class BroadcastHandler(WebSocketHandler):
         logging.info("got message %r", message)
         data = json_decode(message)
 
+        logging.info(data.get('action', '').upper())
         if data.get('action') == 'goal':
             self._process_goal(data)
-        if data.get('action') == 'subscribe':
+        elif data.get('action') == 'subscribe':
             self.subscribe(Match.objects.get(pk=data.get('match')), self)
+        elif data.get('action') == 'start':
+            self._process_start(data)
+        else:
+            logging.info(data)
 
     def _process_goal(self, data):
         match = Match.objects.get(pk=data.get('match'))
@@ -61,7 +66,7 @@ class BroadcastHandler(WebSocketHandler):
             type=MatchEvent.TYPE_GOAL,
             score_home=scores[0],
             score_away=scores[1],
-            time_offset=(now() - half_start).total_seconds(),
+            time_offset=int((now() - half_start).total_seconds()),
             half_index=starts.index(half_start)
         )
         match.score_home, match.score_away = scores
@@ -89,3 +94,15 @@ class BroadcastHandler(WebSocketHandler):
     @classmethod
     def subscribe(cls, match: Match, subscriber: WebSocketHandler):
         cls.subscribers[match.id].add(subscriber)
+
+    def _process_start(self, data):
+        match = Match.objects.get(pk=data.get('match'))
+
+        if match.second_half_start:
+            return # TODO: error
+        if match.first_half_start:
+            match.second_half_start = now()
+        else:
+            match.first_half_start = now()
+
+        match.save()

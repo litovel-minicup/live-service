@@ -7,7 +7,7 @@
                     :key="event.id"
                     class="list-group-item d-flex justify-content-between align-items-center">
                 <span>
-                    <b-badge>{{ event.timeOffset | prettyTime }}</b-badge>
+                    <b-badge>{{ event.halfIndex + 1}}/2 | {{ event.timeOffset | prettyTime }}</b-badge>
                 {{ event.message }}
                     </span>
                 <button type="button" class="btn btn-danger"><span class="close">&times;</span></button>

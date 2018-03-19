@@ -56,19 +56,32 @@
                 'events'
             ]),
         },
+        watch: {
+            '$route'(to, from) {
+                console.log(to, from, 'trololo')
+
+            }
+        },
         methods: {
             goal({player}) {
                 this.$store.dispatch('goal', {player});
             }
         },
         beforeMount() {
-            this.$store.dispatch('loadMatch', {match: this.$store.state.route.params.match});
-            this.$store.dispatch('loadEvents', {match: this.$store.state.route.params.match});
-            this.$store.dispatch('sendObj', {
-                    match: this.$store.state.route.params.match,
-                    action: 'subscribe'
+            // TODO: refactor this.$store.state.route.params.match
+            console.log('STATE: ', this.$store.state, this.match);
+            this.$store.dispatch('openMatch', {match: this.$store.state.route.params.match});
+
+            this.$store.commit('connectFsmEvent', {
+                event: 'change',
+                cb: (ev, fsm) => {
+                    this.$store.dispatch('sendObj', {
+                        action: 'state_change',
+                        state: fsm.state,
+                        match: this.$store.state.match.id
+                    });
                 }
-            );
+            });
         },
     }
 </script>

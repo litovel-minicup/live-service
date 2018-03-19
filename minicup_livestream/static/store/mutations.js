@@ -1,3 +1,5 @@
+import camelCaseKeys from 'camelcase-keys'
+
 export default {
     setCategories(state, cats) {
         state.categories = cats;
@@ -48,10 +50,15 @@ export default {
     },
     // default handler called for all methods
     SOCKET_ONMESSAGE(state, data) {
+        data = camelCaseKeys(data);
+
         state.lastData = data;
-        console.log('Message: ', data);
-        this.commit('addEvent', data.event);
-        this.commit('setMatch', data.match);
+        if (data.event) {
+            this.commit('addEvent', data.event);
+        }
+        if (data.match) {
+            this.commit('setMatch', data.match);
+        }
     },
     // mutations for reconnect methods
     SOCKET_RECONNECT(state, count) {

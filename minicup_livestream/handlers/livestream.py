@@ -38,11 +38,10 @@ class BroadcastHandler(WebSocketHandler):
         logging.info(data.get('action', '').upper())
         if data.get('action') == 'goal':
             self._process_goal(data)
+        elif data.get('action') == 'state_change':
+            self._process_state_change(data)
         elif data.get('action') == 'subscribe':
             self.subscribe(Match.objects.get(pk=data.get('match')), self)
-        elif data.get('action') == 'start':
-            self._process_start(data)
-        else:
             logging.info(data)
 
     def _process_goal(self, data):
@@ -95,14 +94,20 @@ class BroadcastHandler(WebSocketHandler):
     def subscribe(cls, match: Match, subscriber: WebSocketHandler):
         cls.subscribers[match.id].add(subscriber)
 
-    def _process_start(self, data):
+    def _process_state_change(self, data):
         match = Match.objects.get(pk=data.get('match'))
+        state = data.get('state')
 
-        if match.second_half_start:
-            return # TODO: error
-        if match.first_half_start:
-            match.second_half_start = now()
-        else:
+        if state not in Match.STATES:
+            return  # TODO: error
+
+        match.online_state = state
+        if state == Match.STATE_HALF_FIRST:
             match.first_half_start = now()
+        elif state == Match.STATE_HALF_SECOND:
+            match.second_half_start = now()
 
         match.save()
+        self.notify(match, dict(
+            match=match.serialize()
+        ))

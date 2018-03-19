@@ -17,6 +17,15 @@ export default {
             // TODO: error
         });
     },
+    openMatch({dispatch}, d) {
+        dispatch('loadMatch', d);
+        dispatch('loadEvents', d);
+        dispatch('sendObj', {
+                action: 'subscribe',
+                ...d
+            }
+        );
+    },
     loadMatch(context, {match}) {
         Vue.http.get('/api/match/' + match.toString()).then(response => {
             this.commit('setMatch', response.body);
@@ -31,30 +40,26 @@ export default {
             // TODO: error
         });
     },
-    startHalf(context) {
-        context.commit('startTimer');
-        context.dispatch('sendObj', {
-            action: 'start',
-            match: context.state.match.id
-        })
+    startHalf({commit}) {
+        commit('startTimer');
     },
-    endHalf(context) {
-        context.commit('stopTimer');
+    endHalf({commit}) {
+        commit('stopTimer');
     },
 
-    goal(context, {player}) {
-        context.dispatch('sendObj', {
+    goal({dispatch, state}, {player}) {
+        dispatch('sendObj', {
             action: 'goal',
-            match: context.state.match.id,
+            match: state.match.id,
             player: player,
         });
     },
 
-    sendObj(context, obj) {
-        if (context.state.socket.isConnected) {
+    sendObj({state, commit}, obj) {
+        if (state.socket.isConnected) {
             this.$socket.sendObj(obj)
         } else {
-            context.commit('pushSocketQueue', obj)
+            commit('pushSocketQueue', obj)
         }
     }
 }

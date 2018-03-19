@@ -1,7 +1,7 @@
 <template>
-    <div class="container">
+    <b-container>
         <router-view/>
-    </div>
+    </b-container>
 </template>
 
 <script>
@@ -40,11 +40,11 @@
     }
 
     .scale-out-enter-active {
-        animation: scale-out .5s;
+        animation: scale-out 300ms;
     }
 
     .scale-out-leave-active {
-        animation: scale-out .5s reverse;
+        animation: scale-out 300ms reverse;
     }
 
     .fade-enter-active, .fade-leave-active {

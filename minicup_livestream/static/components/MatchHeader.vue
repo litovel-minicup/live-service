@@ -10,37 +10,23 @@
         </div>
         <div class="row mt-2 justify-content-center">
             <transition name="scale-out" mode="out-in" tag="div" class="col-12 align-content-center text-center">
-                <code class="display-4 text-center d-block mb-1" v-if="isRunning">
+                <code class="display-4 text-center d-block" v-if="isRunning">
                     {{ timeFormatted }}
                 </code>
-                <div class="display-4" v-if="state === 's' || state === 'h'">
+                <div class="display-4 pb-1" v-if="!isRunning && state !== 'end'">
                     <b-btn variant="success" @click="start()">START</b-btn>
                 </div>
             </transition>
         </div>
         <div class="row justify-content-center">
             <div class="col text-center display-5">
-                <template v-if="state === 's'">
-                    před zápasem
-                </template>
-                <template v-else-if="state === 'r1'">
-                    1. poločas
-                </template>
-                <template v-else-if="state === 'h'">
-                    v poločase
-                </template>
-                <template v-else-if="state === 'r2'">
-                    2. poločas
-                </template>
-                <template v-else-if="state === 'e'">
-                    po zápase
-                </template>
+                {{ stateLabel }}
             </div>
         </div>
         <div class="row no-gutters mt-2 d-flex align-items-center justify-content-center">
             <div class="col text-right display-4">
                 <transition name="scale-out">
-                    <b-btn v-if="running" size="lg" variant="primary" block class="btn-score" @click="$emit('homeGoal')">
+                    <b-btn v-if="isRunning" size="lg" variant="primary" block class="btn-score" @click="$emit('homeGoal')">
                         +1
                     </b-btn>
                 </transition>
@@ -50,7 +36,7 @@
             </div>
             <div class="col display-4">
                 <transition name="scale-out">
-                    <b-btn v-if="running" size="lg" variant="warning" block class="btn-score" @click="$emit('awayGoal')">
+                    <b-btn v-if="isRunning" size="lg" variant="warning" block class="btn-score" @click="$emit('awayGoal')">
                         +1
                     </b-btn>
                 </transition>
@@ -80,11 +66,20 @@
                 return Math.floor(this.timerCount / 60).pad(2) + ':' + (this.timerCount % 60).pad(2);
             },
             state() {
-                return this.$store.state.fsm.state;
+                return this.$store.state.match.state;
             },
             isRunning() {
-                return this.state === 'r1' || this.state === 'r2'
+                return this.state === 'half_first' || this.state === 'half_second'
             },
+            stateLabel() {
+                return {
+                    'init': 'před zápasem',
+                    'half_first': '1. poločas',
+                    'pause': 'přestávka',
+                    'half_second': '2. poločas',
+                    'end': 'po zápase'
+                }[this.state]
+            }
         },
         beforeMount() {
             this.$store.commit('connectFsmEvent', {
@@ -96,18 +91,21 @@
             });
 
             this.$store.commit('connectFsmEvent', {
-                event: '(h e)',
+                event: '(pause end)',
                 cb: (evt, fsm) => {
+                    console.log('stop timer');
                     this.enableTimer = false;
                     this.$emit('stopTimer');
                 },
             });
             const timeoutCb = () => {
-                if (this.enableTimer)
+                if (this.enableTimer) {
                     this.timerCount++;
-                if (this.timerCount > 10) {
-                    this.$store.dispatch('endHalf');
-                    this.timerCount = 0;
+                    if (this.timerCount > 10) {
+                        this.$store.dispatch('endHalf').then(() => {
+                            this.timerCount = 0
+                        });
+                    }
                 }
 
                 this.timeoutID = setTimeout(timeoutCb, 1000);

@@ -40,12 +40,6 @@ Number.prototype.pad = function (size, char = '0') {
     return sign + new Array(size).concat([Math.abs(this)]).join(char).slice(-size);
 };
 
-Vue.config.errorHandler = function (err, vm, info) {
-  // handle error
-  // `info` is a Vue-specific error info, e.g. which lifecycle hook
-  // the error was found in. Only available in 2.2.0+
-    alert();
-};
 
 const app = new Vue({
     el: '#app',

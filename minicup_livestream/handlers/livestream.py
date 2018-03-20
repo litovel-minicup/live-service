@@ -77,7 +77,7 @@ class BroadcastHandler(WebSocketHandler):
 
     @classmethod
     def notify(cls, match: Match, message: Union[dict, str]):
-        for sub in cls.subscribers.get(match.id):  # type: WebSocketHandler
+        for sub in cls.subscribers[match.id]:  # type: WebSocketHandler
             sub.write_message(message)
             logging.info('NOTIFY: {} - {}'.format(sub, str(message)[:50]))
 

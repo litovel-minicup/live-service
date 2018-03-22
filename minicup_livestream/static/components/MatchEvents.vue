@@ -8,7 +8,7 @@
             >
                 <span>
                     <b-badge>{{ event.halfIndex + 1}}/2 | {{ event.timeOffset | prettyTime }}</b-badge>
-                    {{ event.message }}
+                    <strong>{{ event.score[0] }}:{{ event.score[1] }}</strong> {{ event.message }}
                 </span>
                 <button type="button" class="btn btn-danger"><span class="close">&times;</span></button>
             </li>

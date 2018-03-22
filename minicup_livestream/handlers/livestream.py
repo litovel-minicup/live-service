@@ -9,13 +9,17 @@ from tornado.escape import json_decode
 from tornado.websocket import WebSocketHandler
 
 from minicup_administration.core.models import Match, MatchEvent, Player
+from minicup_livestream.service.match_event import MatchEventMessageGenerator
 
 
 class BroadcastHandler(WebSocketHandler):
     subscribers = defaultdict(set)  # type: DefaultDict[int, Set[WebSocketHandler]]
 
+    match_event_message_generator = MatchEventMessageGenerator()
+
     def __init__(self, application, request, **kwargs):
         super().__init__(application, request, **kwargs)
+
 
     def get_compression_options(self):
         # Non-None enables compression with default options.
@@ -61,13 +65,14 @@ class BroadcastHandler(WebSocketHandler):
         match_event = MatchEvent.objects.create(
             match=match,
             player=player,
-            message='New goal from {} - new state is {}.'.format(player, ':'.join(map(str, scores))),
             type=MatchEvent.TYPE_GOAL,
             score_home=scores[0],
             score_away=scores[1],
             time_offset=int((now() - half_start).total_seconds()),
             half_index=starts.index(half_start)
         )
+        match_event.message = self.match_event_message_generator.generate(match_event=match_event)
+        match_event.save()
         match.score_home, match.score_away = scores
         match.save()
         self.notify(match, dict(

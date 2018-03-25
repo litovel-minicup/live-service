@@ -65,6 +65,7 @@ class BroadcastHandler(WebSocketHandler):
         match_event = MatchEvent.objects.create(
             match=match,
             player=player,
+            team_info=player.team_info,
             type=MatchEvent.TYPE_GOAL,
             score_home=scores[0],
             score_away=scores[1],

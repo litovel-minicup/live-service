@@ -102,7 +102,7 @@
                 if (!this.enableTimer) return;
 
                 this.timerCount++;
-                if (this.timerCount > 60) {
+                if (this.timerCount > 600) {
                     this.$store.dispatch('endHalf').then(() => {
                         this.timerCount = 0
                     });

@@ -1,7 +1,8 @@
 # coding=utf-8
 from random import choice
+from typing import Callable, Tuple
 
-from minicup_administration.core.models import MatchEvent
+from minicup_administration.core.models import MatchEvent, Match, TeamInfo
 
 
 class Score(tuple):
@@ -9,36 +10,151 @@ class Score(tuple):
         return ':'.join(map(str, self))
 
 
+Rule = Callable[[MatchEvent, ], bool]
+
+
+def need_player(cb: Rule):
+    def _(me: MatchEvent):
+        if not me.player:
+            return False
+        return cb(me)
+
+    return _
+
+
+def lots_of_goals(me: MatchEvent):
+    return sum(me.score) > 30
+
+
+def near_end(me, threshold=20):
+    return (Match.HALF_LENGTH.total_seconds() - me.time_offset) < threshold
+
+
+def near_half_end_p(me: MatchEvent):
+    return near_end(me)
+
+
+def nth_match_goals_fulfill_p(count):
+    @need_player
+    def _(me: MatchEvent):
+        return me.score[me.match.teams.index(me.team_info)] == count
+
+    return _
+
+
+def nth_player_goals_fulfill_p(count):
+    @need_player
+    def _(me: MatchEvent):
+        return me.match.match_match_event.filter(
+            player=me.player,
+            type=MatchEvent.TYPE_GOAL
+        ).count() == count
+
+    return _
+
+
+def match_score(me: MatchEvent):
+    return len(set(me.score)) == 1
+
+
+@need_player
+def anywhere_p(me: MatchEvent):
+    return True
+
+
+def is_difference_change_match_event(positive):
+    def _(me: MatchEvent):
+        selected = sorted(
+            enumerate(me.match.teams),
+            key=lambda t: me.score[t[0]],
+            reverse=positive
+        )[0]  # type: Tuple[int, TeamInfo]
+        return selected[1] == me.team_info
+
+    return _
+
+
+is_lose_decrease_goal = is_difference_change_match_event(positive=False)
+is_lose_decrease_goal_p = need_player(is_lose_decrease_goal)
+
+is_win_increase_goal = is_difference_change_match_event(positive=True)
+is_win_increase_goal_p = need_player(is_win_increase_goal)
+
+
 class MatchEventMessageGenerator(object):
-    import vokativ.vokativ
     # ó
     MESSAGES = (
-        # TODO: conditions
-        (lambda me: True, '{player} snížil stav utkání!'),
-        (lambda me: True, '{player} navyšuje stav utkání!'),
-        (lambda me: True, 'Střela a {player} vyrovnává stav utkání!'),
-        (lambda me: True, '{player} se prosadil!'),
-        (lambda me: True, 'Branku vsítil {player}!'),
-        (lambda me: True, 'Sít rozvlnil {player}!'),
-        (lambda me: True, '{player} upravuje stav utkání!'),
-        (lambda me: True, '{player} to tam poslal!'),
-        (lambda me: True, '{player} se prosadil!'),
-        (lambda me: True, '{player} skóroval!'),
-        (lambda me: True, '{player} potvrzuje dominanci domácích/hostů!'),
-        (lambda me: True, '{player} potvrzuje debakl domácích/hostů!'),
-        (lambda me: True, '{player} se přesvědčivě prosazuje!'),
-        (lambda me: True, '{player} otevírá gólový účet tohoto zápasu!'),
-        (lambda me: True, '{player} střílí gól do šatny!'),
-        (lambda me: True, 'I {player} se prosazuje!'),
-        (lambda me: True, 'K této kanonádě se přidává i {player}!'),
-        (lambda me: True, 'I {player} se přidává ke střelcům tohoto klání!'),
-        (lambda me: True, 'Gól před sirénou pro {player}.'),
-        (lambda me: True, '{player} završuje první desítku gólů svého týmu.'),
-        (lambda me: True, '{player} završuje druhou desítku gólů svého týmu.'),
-    )
+        (nth_match_goals_fulfill_p(1), '{player} otevírá gólový účet tohoto zápasu!'),
+        (nth_match_goals_fulfill_p(1), '{player} poprvé rozvlnil sít v tomto zápase!'),
+
+        (nth_player_goals_fulfill_p(1), 'I {player} se prosazuje!'),
+        (nth_player_goals_fulfill_p(1), 'I {player} se přidává ke střelcům tohoto klání!'),
+
+        (near_half_end_p, '{player} střílí gól do šatny!'),
+        (near_half_end_p, '{player} se těsně před koncem poločasu prosazuje!'),
+        (near_half_end_p, 'Gól před sirénou pro {player}!'),
+
+        (nth_match_goals_fulfill_p(10), '{player} završuje první desítku gólů svého týmu!'),
+        (nth_match_goals_fulfill_p(10), '{player} poprvé otevírá dvouciferné skore svého týmu!'),
+        (nth_match_goals_fulfill_p(20), '{player} střílí dvacátou branku pro tým {team}!'),
+        (nth_match_goals_fulfill_p(20), '{player} završuje druhou desítku gólů svého týmu!'),
+        (nth_match_goals_fulfill_p(30), '{player} se prosazuje třicátou brankou týmu {team}!'),
+        (nth_match_goals_fulfill_p(30), '{player} završuje třetí desítku gólů pro tým {team}!'),
+
+        (nth_player_goals_fulfill_p(5), '{player} předvádí své dovednosti pátou brankou!'),
+        (nth_player_goals_fulfill_p(5), 'Pátá branka v tomto utkání pro {player}!'),
+        (nth_player_goals_fulfill_p(8), 'Střeleckou slinu našel {player}!'),
+        (nth_player_goals_fulfill_p(10), 'Desátou brankou prokazuje {player} střeleckou formu!'),
+        (nth_player_goals_fulfill_p(10), 'Střelec utkání {player} se prosazuje podesáté!'),
+
+        (match_score, 'Střela a {player} vyrovnává stav utkání!'),
+        (match_score, '{player} srovnává stav tohoto utkání!'),
+
+        (is_lose_decrease_goal_p, '{player} snížil stav utkání!'),
+        (is_lose_decrease_goal_p, '{player} snižuje gólový deficit svého týmu!'),
+        (is_win_increase_goal_p, '{player} navyšuje stav utkání!'),
+        (is_win_increase_goal_p, '{player} navyšuje vedení týmu {team}!'),
+        (lots_of_goals, 'K této kanonádě se přidává i {player}!'),
+        (lots_of_goals, 'Další branku tohoto utkání bohatého na góly přidává i {player}!'),
+
+        (anywhere_p, '{player} se prosazuje!'),
+        (anywhere_p, 'Branku vsítil {player}!'),
+        (anywhere_p, 'Sít rozvlnil {player}!'),
+        (anywhere_p, '{player} upravuje stav utkání!'),
+        (anywhere_p, '{player} to tam poslal!'),
+        (anywhere_p, '{player} se prosadil!'),
+        (anywhere_p, '{player} skóroval!'),
+        (anywhere_p, '{player} se přesvědčivě prosazuje!'),
+
+        # (lambda me: True, '{player} potvrzuje vedení týmu {team}!'),
+        # (lambda me: True, '{player} potvrzuje debakl {opposite_team}!'),
+    )  # type: Tuple[Tuple[Rule, str]]
 
     def generate(self, match_event: MatchEvent):
         player = match_event.player
         scores = match_event.score_home, match_event.score_away
 
-        return choice(self.MESSAGES)[1].format(player=player)
+        filtered = []
+        messages_len = len(self.MESSAGES)
+        adding = False
+        i = 0
+        while i < messages_len:
+            cb, msg = self.MESSAGES[i]
+            if cb(match_event):
+                adding = True
+                filtered.append(msg)
+                i += 1
+                continue
+            elif adding:
+                break
+            i += 1
+        if filtered:
+            return choice(filtered).format(
+                player=player,
+                team=match_event.team_info,
+                opposite_team=tuple(set(match_event.match.teams) - {match_event.team_info})[0]
+            )
+        return 'Změna stavu.'
+
+
+__all__ = ['MatchEventMessageGenerator']

@@ -56,6 +56,7 @@ class BroadcastHandler(WebSocketHandler):
         rivals = (match.home_team_info, match.away_team_info)
         if player.team_info not in rivals:
             # TODO: problem
+            logging.error('Player {} cannot score in match {}.'.format(player, match))
             pass
         scores = [match.score_home, match.score_away]
         scores[rivals.index(player.team_info)] += 1
@@ -63,6 +64,7 @@ class BroadcastHandler(WebSocketHandler):
         starts = (match.first_half_start, match.second_half_start)
         half_start = max(filter(None, starts))
         self.subscribe(match=match, subscriber=self)
+
         # type: MatchEvent
         match_event = MatchEvent.objects.create(
             match=match,
@@ -117,7 +119,7 @@ class BroadcastHandler(WebSocketHandler):
             match.second_half_start = now()
             IOLoop.current().call_later(Match.HALF_LENGTH.total_seconds(), self._half_end_callback(match_=match))
 
-        match.save()
+        match.save(update_fields=('first_half_start', 'second_half_start', ))
         self.notify(match, dict(
             match=match.serialize()
         ))
@@ -136,3 +138,9 @@ class BroadcastHandler(WebSocketHandler):
             ))
 
         return cb
+
+    def __str__(self):
+        return '{}({})'.format(
+            self.__class__.__name__,
+            dict(self.request.headers).get('User-Agent'),
+        )

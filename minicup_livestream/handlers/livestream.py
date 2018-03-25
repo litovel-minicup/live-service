@@ -4,8 +4,10 @@ import logging
 from collections import defaultdict
 from typing import DefaultDict, Set, Union
 
+from django.db import transaction
 from django.utils.timezone import now
 from tornado.escape import json_decode
+from tornado.ioloop import IOLoop
 from tornado.websocket import WebSocketHandler
 
 from minicup_administration.core.models import Match, MatchEvent, Player
@@ -19,7 +21,6 @@ class BroadcastHandler(WebSocketHandler):
 
     def __init__(self, application, request, **kwargs):
         super().__init__(application, request, **kwargs)
-
 
     def get_compression_options(self):
         # Non-None enables compression with default options.
@@ -35,6 +36,7 @@ class BroadcastHandler(WebSocketHandler):
         logging.info('CLOSE: ')
         self.unsubscribe(self)
 
+    @transaction.atomic
     def on_message(self, message):
         logging.info("got message %r", message)
         data = json_decode(message)
@@ -104,16 +106,33 @@ class BroadcastHandler(WebSocketHandler):
         match = Match.objects.get(pk=data.get('match'))
         state = data.get('state')
 
-        if state not in Match.STATES:
-            return  # TODO: error
+        if not match.change_state(state):
+            return
 
-        match.online_state = state
         if state == Match.STATE_HALF_FIRST:
             match.first_half_start = now()
+            IOLoop.current().call_later(Match.HALF_LENGTH.total_seconds(), self._half_end_callback(match_=match))
+
         elif state == Match.STATE_HALF_SECOND:
             match.second_half_start = now()
+            IOLoop.current().call_later(Match.HALF_LENGTH.total_seconds(), self._half_end_callback(match_=match))
 
         match.save()
         self.notify(match, dict(
             match=match.serialize()
         ))
+
+    def _half_end_callback(self, match_: Match):
+        def cb(handler: BroadcastHandler = self, match: Match = match_):
+            match.refresh_from_db(fields=('online_state',))
+
+            if match.online_state == Match.STATE_HALF_FIRST:
+                match.change_state(Match.STATE_HALF_PAUSE)
+            elif match.online_state == Match.STATE_HALF_SECOND:
+                match.change_state(Match.STATE_END)
+
+            handler.notify(match, dict(
+                match=match.serialize()
+            ))
+
+        return cb

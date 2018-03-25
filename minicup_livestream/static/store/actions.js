@@ -29,6 +29,7 @@ export default {
     loadMatch(context, {match}) {
         Vue.http.get('/api/match/' + match.toString()).then(response => {
             this.commit('setMatch', response.body);
+            this.commit('doFsmAction', 'load_' + response.body.state);
         }, response => {
             // TODO: error
         });

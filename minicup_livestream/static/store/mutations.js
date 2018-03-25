@@ -20,8 +20,11 @@ export default {
         state.events.unshift(event)
     },
 
+    doFsmAction(state, action) {
+        state.fsm.do(action);
+    },
     startTimer(state) {
-        state.fsm.do('start');
+        this.commit('doFsmAction', 'start');
     },
     connectFsmEvent(state, {event, cb}) {
         state.fsm.on(event, (...args) => {

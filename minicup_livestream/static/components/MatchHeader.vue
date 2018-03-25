@@ -97,11 +97,15 @@
                     this.$emit('stopTimer');
                 },
             });
+
+            console.log("Match: ", this.match);
             const timeoutCb = () => {
                 this.timeoutID = setTimeout(timeoutCb, 1000);
-                if (!this.enableTimer) return;
+                // if (!this.enableTimer) return;
 
-                this.timerCount++;
+                const start = this.match.second_half_start ? this.match.second_half_start : this.match.first_half_start;
+                this.timerCount = (Number(Date.now() / 1000) - start) | 0;
+
                 if (this.timerCount > 600) {
                     this.$store.dispatch('endHalf').then(() => {
                         this.timerCount = 0

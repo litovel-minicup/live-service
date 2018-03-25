@@ -12,6 +12,7 @@ export default {
     },
     setMatch(state, match) {
         state.match = _.merge({}, state.match, match);
+        this.commit('doFsmAction', 'load_' + state.match.state);
     },
     setEvents(state, events) {
         state.events = events
@@ -54,12 +55,14 @@ export default {
     // default handler called for all methods
     SOCKET_ONMESSAGE(state, data) {
         data = camelCaseKeys(data);
-
         state.lastData = data;
-        if (data.event) {
+        if (_.has(data, 'event')) {
             this.commit('addEvent', data.event);
         }
-        if (data.match) {
+        if (_.has(data, 'events')) {
+            this.commit('setEvents', data.events);
+        }
+        if (_.has(data, 'match')) {
             this.commit('setMatch', data.match);
         }
     },

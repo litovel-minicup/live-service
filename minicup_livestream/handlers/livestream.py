@@ -43,12 +43,20 @@ class BroadcastHandler(WebSocketHandler):
 
         logging.info(data.get('action', '').upper())
         if data.get('action') == 'goal':
+            self.subscribe_from_data(data=data)
             self._process_goal(data)
         elif data.get('action') == 'state_change':
+            self.subscribe_from_data(data=data)
             self._process_state_change(data)
+        elif data.get('action') == 'delete_event':
+            self.subscribe_from_data(data=data)
+            self._delete_event(data)
         elif data.get('action') == 'subscribe':
-            self.subscribe(Match.objects.get(pk=data.get('match')), self)
+            self.subscribe_from_data(data=data)
             logging.info(data)
+
+    def subscribe_from_data(self, data):
+        self.subscribe(match=Match.objects.get(pk=data.get('match')), subscriber=self)
 
     def _process_goal(self, data):
         match = Match.objects.get(pk=data.get('match'))
@@ -63,7 +71,6 @@ class BroadcastHandler(WebSocketHandler):
         # type: datetime
         starts = (match.first_half_start, match.second_half_start)
         half_start = max(filter(None, starts))
-        self.subscribe(match=match, subscriber=self)
 
         # type: MatchEvent
         match_event = MatchEvent.objects.create(
@@ -119,7 +126,7 @@ class BroadcastHandler(WebSocketHandler):
             match.second_half_start = now()
             IOLoop.current().call_later(Match.HALF_LENGTH.total_seconds(), self._half_end_callback(match_=match))
 
-        match.save(update_fields=('first_half_start', 'second_half_start', ))
+        match.save(update_fields=('first_half_start', 'second_half_start',))
         self.notify(match, dict(
             match=match.serialize()
         ))
@@ -144,3 +151,24 @@ class BroadcastHandler(WebSocketHandler):
             self.__class__.__name__,
             dict(self.request.headers).get('User-Agent'),
         )
+
+    def _delete_event(self, data):
+        event = MatchEvent.objects.get(pk=data.get('event'))  # type: MatchEvent
+        match = event.match
+        logging.info('Deleting {}.'.format(event))
+        before = match.match_match_event.exclude(pk=event.pk).last()  # type: MatchEvent
+
+        if before:
+            match.score_home, match.score_away = before.score
+        else:
+            match.score_home, match.score_away = 0, 0
+        # TODO: cannot delete any event
+        event.delete()
+        match.save(update_fields=('score_home', 'score_away'))
+
+        self.notify(match, dict(
+            match=match.serialize(),
+            events=[
+                e.serialize() for e in match.match_match_event.all()
+            ]
+        ))

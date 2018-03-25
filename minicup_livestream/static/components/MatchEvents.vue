@@ -8,9 +8,11 @@
             >
                 <span>
                     <b-badge>{{ event.halfIndex + 1}}/2 | {{ event.timeOffset | prettyTime }}</b-badge>
-                    <strong>{{ event.score[0] }}:{{ event.score[1] }}</strong> {{ event.message }}
+                    {{ event.message }} (<strong>{{ event.score[0] }}:{{ event.score[1] }}</strong>)
                 </span>
-                <button type="button" class="btn btn-danger"><span class="close">&times;</span></button>
+                <button type="button" class="btn btn-danger" v-if="canDelete(event)" @click="deleteEvent(event)">
+                    <span class="close">&times;</span>
+                </button>
             </li>
         </transition-group>
     </div>
@@ -19,13 +21,21 @@
 <script>
     export default {
         name: "events-list",
-        props: ['events'],
-
+        props: ['match', 'events'],
         filters: {
             prettyTime(secs) {
                 secs = Number(secs);
                 return `${Math.floor(secs / 60).pad(2)}:${(secs % 60).pad(2)}`;
             },
+        },
+        methods: {
+            canDelete(event) {
+                const last = this.sorted[0];
+                return last.id === event.id;
+            },
+            deleteEvent(event) {
+                this.$store.dispatch('deleteEvent', event);
+            }
         },
         computed: {
             sorted() {

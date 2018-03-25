@@ -55,6 +55,14 @@ export default {
             player: player,
         });
     },
+    deleteEvent({dispatch, state}, event) {
+        dispatch('sendObj', {
+            action: 'delete_event',
+            match: state.match.id,
+            event: event.id,
+        });
+        console.log(event);
+    },
 
     sendObj({state, commit}, obj) {
         if (state.socket.isConnected) {

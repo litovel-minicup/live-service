@@ -13,7 +13,7 @@
 
         <div class="row mt-4 justify-content-center">
             <div class="col-12">
-                <match-events :events="events"/>
+                <match-events :events="events" :match="match"/>
             </div>
         </div>
 

@@ -1,10 +1,10 @@
 <template>
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-6 text-right team-name" :title="match.home_team_name">
+            <div class="col-6 text-right team-name" :title="match.home_team_name" :style="{ borderBottomColor: match.home_team_color }">
                 {{ match.home_team_name }}
             </div>
-            <div class="col-6 team-name" :title="match.away_team_name">
+            <div class="col-6 team-name" :title="match.away_team_name"  :style="{ borderBottomColor: match.away_team_color }">
                 {{ match.away_team_name }}
             </div>
         </div>
@@ -124,5 +124,6 @@
 <style scoped lang="scss">
     .team-name {
         font-size: 2em;
+        border-bottom: .2em solid;
     }
 </style>

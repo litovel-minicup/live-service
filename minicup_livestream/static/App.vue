@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="spinner">
-            <spinner :enable="enabled"/>
+            <spinner :enable="hasConnectionProblem"/>
         </div>
         <b-container>
             <router-view/>
@@ -18,9 +18,13 @@
             Spinner
         },
         computed: {
-            enabled() {
+            hasConnectionProblem() {
                 return this.$store.state.socket.reconnectError || !this.$store.state.socket.isConnected;
             }
+        },
+        beforeMount() {
+            this.$toastr.defaultPosition = "toast-bottom-center";
+            this.$toastr.s("ERRROR MESSAGE");
         }
     }
 </script>

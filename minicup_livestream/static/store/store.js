@@ -24,7 +24,6 @@ const store = new Vuex.Store({
         },
         events: [],
 
-        time: 0,
         fsm: fsm
     },
     actions,

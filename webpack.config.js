@@ -36,7 +36,12 @@ module.exports = {
                     name: '[name].[ext]?[hash]'
                 }
             },
-            {test: /\.scss$/, use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']},
+            {
+                test: /\.scss$/,
+                use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader'],
+
+                // postcss: {},
+            },
 
         ]
     },

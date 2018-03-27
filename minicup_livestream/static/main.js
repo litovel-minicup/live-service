@@ -6,11 +6,13 @@ import {sync} from 'vuex-router-sync'
 import VueResource from 'vue-resource'
 import Raven from 'raven-js';
 import RavenVue from 'raven-js/plugins/vue';
-
-
+import Toastr from 'vue-toastr';
 import App from './App.vue'
 import router from './router'
 import store from './store/store'
+
+require('vue-toastr/src/vue-toastr.scss');
+
 
 Raven
     .config('https://426ce166aa3646f591835476dcc0b487@sentry.io/306681')
@@ -33,6 +35,9 @@ store.$socket = Vue.prototype.$socket;
 Vue.use(VueResource);
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);
+Vue.use(Toastr);
+
+
 sync(store, router);
 
 Number.prototype.pad = function (size, char = '0') {

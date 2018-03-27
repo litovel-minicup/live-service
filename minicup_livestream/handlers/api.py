@@ -3,9 +3,10 @@ from django.shortcuts import get_object_or_404
 from tornado.web import RequestHandler
 
 from minicup_administration.core.models import Category, Match, TeamInfo
+from minicup_livestream.handlers.base import AuthenticatedBaseHandler
 
 
-class CategoryListHandler(RequestHandler):
+class CategoryListHandler(AuthenticatedBaseHandler):
     def get(self):
         self.write(dict(categories=[
             dict(
@@ -15,7 +16,7 @@ class CategoryListHandler(RequestHandler):
         ]))
 
 
-class MatchListHandler(RequestHandler):
+class MatchListHandler(AuthenticatedBaseHandler):
     def get(self, category_id):
         self.write(dict(matches=[
             dict(
@@ -25,7 +26,7 @@ class MatchListHandler(RequestHandler):
         ]))
 
 
-class MatchHandler(RequestHandler):
+class MatchHandler(AuthenticatedBaseHandler):
     def get(self, match_id):
         # type: Match
         match = get_object_or_404(Match, pk=match_id)
@@ -46,7 +47,7 @@ class MatchHandler(RequestHandler):
         ))
 
 
-class MatchEventsHandler(RequestHandler):
+class MatchEventsHandler(AuthenticatedBaseHandler):
     def get(self, match_id):
         match = get_object_or_404(Match, pk=match_id)
 
@@ -55,3 +56,5 @@ class MatchEventsHandler(RequestHandler):
                 me.serialize() for me in match.match_match_event.all()
             ]
         ))
+
+

@@ -3,28 +3,64 @@
         <div class="spinner">
             <spinner :enable="hasConnectionProblem"/>
         </div>
-        <b-container>
+        <b-container v-if="loggedIn">
             <router-view/>
         </b-container>
+        <div v-else>
+            <vue-particles
+                    class="particles"
+                    color="#0e5eff"
+                    :particleOpacity="0.8"
+                    :particlesNumber="80"
+                    shapeType="polygon"
+                    :particleSize="6"
+                    linesColor="#0e5eff"
+                    :linesWidth="2"
+                    :lineLinked="true"
+                    :lineOpacity="0.6"
+                    :linesDistance="200"
+                    :moveSpeed="3"
+                    :hoverEffect="true"
+                    hoverMode="grab"
+                    :clickEffect="true"
+                    clickMode="repulse"
+            />
+            <b-container>
+                <div style="height: 100vh;" class="row justify-content-center align-items-center">
+                    <div class="col col-lg-5">
+                        <login-form/>
+                    </div>
+                </div>
+            </b-container>
+        </div>
     </div>
 </template>
 
 <script>
     import Spinner from './components/Spinner'
+    import LoginForm from './components/LoginForm'
+    import {mapState} from 'vuex'
 
     export default {
         name: 'app',
         components: {
-            Spinner
+            Spinner,
+            LoginForm,
         },
         computed: {
             hasConnectionProblem() {
                 return this.$store.state.socket.reconnectError || !this.$store.state.socket.isConnected;
-            }
+            },
+            ...mapState(['loggedIn'])
         },
         beforeMount() {
             this.$toastr.defaultPosition = "toast-bottom-center";
             this.$toastr.s("ERRROR MESSAGE");
+
+            window.addEventListener('keydown', (e) => {
+                this.$emit('keydown', e);
+                console.log('emit');
+            });
         }
     }
 </script>
@@ -38,6 +74,15 @@
         position: fixed;
         left: calc(100% - 80px);
         top: 0;
+    }
+
+    .particles {
+
+        position: absolute;
+        top: 1em;
+        bottom: 1em;
+        left: 1em;
+        right: 1em;
     }
 
     .btn-score {

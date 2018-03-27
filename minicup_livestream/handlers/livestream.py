@@ -11,10 +11,11 @@ from tornado.ioloop import IOLoop
 from tornado.websocket import WebSocketHandler
 
 from minicup_administration.core.models import Match, MatchEvent, Player
-from minicup_livestream.service.match_event import MatchEventMessageGenerator
+from .utils import login_required
+from ..service.match_event import MatchEventMessageGenerator
 
 
-class BroadcastHandler(WebSocketHandler):
+class LivestreamHandler(WebSocketHandler):
     subscribers = defaultdict(set)  # type: DefaultDict[int, Set[WebSocketHandler]]
 
     match_event_message_generator = MatchEventMessageGenerator()
@@ -132,7 +133,7 @@ class BroadcastHandler(WebSocketHandler):
         ))
 
     def _half_end_callback(self, match_: Match):
-        def cb(handler: BroadcastHandler = self, match: Match = match_):
+        def cb(handler: LivestreamHandler = self, match: Match = match_):
             match.refresh_from_db(fields=('online_state',))
 
             if match.online_state == Match.STATE_HALF_FIRST:

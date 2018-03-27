@@ -41,6 +41,14 @@ export default {
             // TODO: error
         });
     },
+    login({commit}, {pin, xsrf}) {
+        return Vue.http.post('/api/login?_xsrf=' + xsrf.toString(), {pin}).then(response => {
+            console.log(response.body);
+            commit('setLoggedIn', !!response.body.success);
+        }, response => {
+            // TODO: error
+        });
+    },
     startHalf({commit}) {
         commit('startTimer');
     },
@@ -63,7 +71,6 @@ export default {
         });
         console.log(event);
     },
-
     sendObj({state, commit}, obj) {
         if (state.socket.isConnected) {
             this.$socket.sendObj(obj)

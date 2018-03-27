@@ -38,6 +38,9 @@ export default {
     pushSocketQueue(state, obj) {
         state.socket.queue.push(obj);
     },
+    setLoggedIn(state, loggedIn) {
+        state.loggedIn = loggedIn;
+    },
 
     SOCKET_ONOPEN(state, event) {
         state.socket.isConnected = true;

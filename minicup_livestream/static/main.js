@@ -10,14 +10,17 @@ import Toastr from 'vue-toastr';
 import App from './App.vue'
 import router from './router'
 import store from './store/store'
+import VueParticles from 'vue-particles'
+import VueCookie from 'vue-cookie'
 
 require('vue-toastr/src/vue-toastr.scss');
 
-
-Raven
-    .config('https://426ce166aa3646f591835476dcc0b487@sentry.io/306681')
-    .addPlugin(RavenVue, Vue)
-    .install();
+Raven.config(
+    'https://426ce166aa3646f591835476dcc0b487@sentry.io/306681',
+    {
+        ignoreUrls: ['localhost:8888', '127.0.0.1']
+    }
+).addPlugin(RavenVue, Vue).install();
 
 function createWebSocket(path) {
     const protocolPrefix = (window.location.protocol === 'https:') ? 'wss:' : 'ws:';
@@ -36,7 +39,8 @@ Vue.use(VueResource);
 Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 Vue.use(Toastr);
-
+Vue.use(VueParticles);
+Vue.use(VueCookie);
 
 sync(store, router);
 

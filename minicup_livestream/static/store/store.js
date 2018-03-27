@@ -24,7 +24,9 @@ const store = new Vuex.Store({
         },
         events: [],
 
-        fsm: fsm
+        fsm: fsm,
+
+        loggedIn: false
     },
     actions,
     mutations,

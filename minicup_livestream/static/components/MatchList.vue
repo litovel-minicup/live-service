@@ -2,13 +2,13 @@
     <div>
         <h1>Výběr zápasu</h1>
         <b-list-group class="list-group">
-            <b-list-group-item href="#"
+            <b-list-group-item href="#" class="row"
                     @click="setMatch(m.id)"
                     v-for="m in nearestMatches"
                     :key="m.id"
             >
-                {{ m.name }}
-                <div class="float-right">{{ m.date }}</div>
+                <b-col>{{ m.name }}</b-col>
+                <b-col class="text-right">{{ m.date }}</b-col>
             </b-list-group-item>
         </b-list-group>
     </div>

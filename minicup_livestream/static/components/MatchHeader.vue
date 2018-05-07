@@ -100,13 +100,14 @@
 
             console.log("Match: ", this.match);
             const timeoutCb = () => {
+                clearInterval(this.timeoutID);
                 this.timeoutID = setTimeout(timeoutCb, 1000);
                 // if (!this.enableTimer) return;
 
                 const start = this.match.second_half_start ? this.match.second_half_start : this.match.first_half_start;
                 this.timerCount = (Number(Date.now() / 1000) - start) | 0;
 
-                if (this.timerCount > 600) {
+                if (this.timerCount > 600 && this.$store.state.running) {
                     this.$store.dispatch('endHalf').then(() => {
                         this.timerCount = 0
                     });

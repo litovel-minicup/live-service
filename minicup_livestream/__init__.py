@@ -1,5 +1,4 @@
 # coding=utf-8
-
-from .conf import configure_django
+from minicup_administration.conf import configure_django
 
 configure_django()

@@ -1,13 +1,17 @@
 <template>
-    <ul class="list-group">
-        <li
-                class="list-group-item list-group-item-action"
-                @click="setCategory(cat.id)"
-                v-for="cat in categories"
-        >
-            {{ cat.name }}
-        </li>
-    </ul>
+    <div>
+        <h1>Výběr kategorie</h1>
+        <div class="list-group">
+            <a
+                    class="list-group-item list-group-item-action"
+                    @click="setCategory(cat.id)"
+                    v-for="cat in categories"
+                    href="#"
+            >
+                {{ cat.name }}
+            </a>
+        </div>
+    </div>
 </template>
 
 <script>

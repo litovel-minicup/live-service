@@ -1,13 +1,17 @@
 <template>
-    <b-list-group class="list-group">
-        <b-list-group-item href="#"
-                @click="setMatch(m.id)"
-                v-for="m in nearestMatches"
-                :key="m.id"
-        >
-            {{ m.name }}
-        </b-list-group-item>
-    </b-list-group>
+    <div>
+        <h1>Výběr zápasu</h1>
+        <b-list-group class="list-group">
+            <b-list-group-item href="#"
+                    @click="setMatch(m.id)"
+                    v-for="m in nearestMatches"
+                    :key="m.id"
+            >
+                {{ m.name }}
+                <div class="float-right">{{ m.date }}</div>
+            </b-list-group-item>
+        </b-list-group>
+    </div>
 </template>
 
 <script>

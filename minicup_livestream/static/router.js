@@ -7,12 +7,10 @@ import MatchDetail from './components/MatchDetail'
 
 
 const routes = [
-    {path: '/', component: CategoryList},
+    {path: '/', component: CategoryList, name: 'home'},
     {path: '/category/:category', component: MatchList, name: 'category'},
     {path: '/match/:match', component: MatchDetail, name: 'match'},
 ];
-const router = new VueRouter({
-    routes // short for `routes: routes`
-});
+const router = new VueRouter({routes});
 
 export default router

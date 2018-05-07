@@ -2,28 +2,13 @@
     <div class="login-form" @click="click">
         <div class="row mb-2 justify-content-center">
             <div class="col-4">
-                <label>
-                    <input type="password" v-model="pin" class="form-control">
-                </label>
+                <form class="form" @submit="send">
+                    <label>
+                        <input type="password" v-model="pin" class="form-control">
+                        <input type="submit" class="form-control" value="Login">
+                    </label>
+                </form>
             </div>
-        </div>
-        <div class="row">
-            <div class="col"><a class="number">1</a></div>
-            <div class="col"><a class="number">2</a></div>
-            <div class="col"><a class="number">3</a></div>
-        </div>
-        <div class="row">
-            <div class="col"><a class="number">4</a></div>
-            <div class="col"><a class="number">5</a></div>
-            <div class="col"><a class="number">6</a></div>
-        </div>
-        <div class="row">
-            <div class="col"><a class="number">7</a></div>
-            <div class="col"><a class="number">8</a></div>
-            <div class="col"><a class="number">9</a></div>
-        </div>
-        <div class="row">
-            <div class="col"><a class="number" @click="send">#</a></div>
         </div>
     </div>
 </template>

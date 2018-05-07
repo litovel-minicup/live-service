@@ -19,13 +19,13 @@
 
         <player-selector
                 ref="homeSelector"
-                @goal="goal"
+                @goal="goal({player: $event, team:match.home_team_id})"
                 :name="match.home_team_name"
                 :players="match.home_team_players"
         />
         <player-selector
                 ref="awaySelector"
-                @goal="goal"
+                @goal="goal({player: $event, team:match.away_team_id})"
                 :name="match.away_team_name"
                 :players="match.away_team_players"
         />
@@ -63,8 +63,8 @@
             }
         },
         methods: {
-            goal({player}) {
-                this.$store.dispatch('goal', {player});
+            goal({player, team}) {
+                this.$store.dispatch('goal', {player, team});
             }
         },
         beforeMount() {

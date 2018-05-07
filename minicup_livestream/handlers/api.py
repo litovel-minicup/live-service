@@ -12,7 +12,7 @@ class CategoryListHandler(AuthenticatedBaseHandler):
             dict(
                 id=c.id,
                 name='{} - {}'.format(c.year, c)
-            ) for c in Category.objects.all()
+            ) for c in Category.objects.filter(match_category__confirmed__isnull=True).distinct()
         ]))
 
 
@@ -21,8 +21,12 @@ class MatchListHandler(AuthenticatedBaseHandler):
         self.write(dict(matches=[
             dict(
                 id=m.id,
-                name=str(m)
-            ) for m in Match.objects.filter(category_id=category_id)
+                name=str(m),
+                date=str(m.match_term)
+            ) for m in Match.objects.filter(
+                category_id=category_id,
+                confirmed__isnull=True,
+            )
         ]))
 
 

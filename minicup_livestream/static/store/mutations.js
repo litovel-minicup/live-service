@@ -68,6 +68,9 @@ export default {
         if (_.has(data, 'match')) {
             this.commit('setMatch', data.match);
         }
+        if (_.has(data, 'logged')) {
+            this.commit('setLoggedIn', data.logged);
+        }
     },
     // mutations for reconnect methods
     SOCKET_RECONNECT(state, count) {

@@ -19,7 +19,23 @@
                     </strong> {{ player.name }}
                 </span>
 
-                    <b-button @click="goal(player)" variant="success">⚽</b-button>
+                    <b-button @click="goal(player.id)" variant="success">⚽</b-button>
+                </b-list-group-item>
+
+                <b-list-group-item
+                        :key="0"
+                        class="d-flex align-items-center justify-content-between"
+                >
+                <span class="d-flex align-items-center">
+                    <strong class="player-number display-4 text-right mr-2">
+                        00
+                    </strong>
+                    <strong class="mr-2">
+                        Neznámý
+                    </strong> hráč
+                </span>
+
+                    <b-button @click="goal(0)" variant="success">⚽</b-button>
                 </b-list-group-item>
             </b-list-group>
 
@@ -38,8 +54,8 @@
             show() {
                 this.$refs.modal.show()
             },
-            goal(player) {
-                this.$emit('goal', {player: player.id});
+            goal(id) {
+                this.$emit('goal', id);
                 this.$refs.modal.hide();
             }
         }

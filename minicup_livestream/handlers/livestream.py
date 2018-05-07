@@ -10,8 +10,7 @@ from tornado.escape import json_decode
 from tornado.ioloop import IOLoop
 from tornado.websocket import WebSocketHandler
 
-from minicup_administration.core.models import Match, MatchEvent, Player
-from .utils import login_required
+from minicup_administration.core.models import Match, MatchEvent, Player, TeamInfo
 from ..service.match_event import MatchEventMessageGenerator
 
 
@@ -32,6 +31,10 @@ class LivestreamHandler(WebSocketHandler):
 
     def open(self, *args, **kwargs):
         logging.info('OPEN: ')
+        if self.get_secure_cookie('user'):
+            self.write_message(dict(
+                logged=True
+            ))
 
     def on_close(self):
         logging.info('CLOSE: ')
@@ -61,23 +64,30 @@ class LivestreamHandler(WebSocketHandler):
 
     def _process_goal(self, data):
         match = Match.objects.get(pk=data.get('match'))
-        player = Player.objects.get(pk=data.get('player'))
+        team_info = TeamInfo.objects.get(pk=data.get('team'))
+
+        try:
+            player = Player.objects.get(pk=data.get('player'))
+        except Player.DoesNotExist:
+            player = None
+
         rivals = (match.home_team_info, match.away_team_info)
-        if player.team_info not in rivals:
+        if player and player.team_info != team_info:
             # TODO: problem
-            logging.error('Player {} cannot score in match {}.'.format(player, match))
+            logging.error('Player {} cannot score for team match {}.'.format(player, team_info))
             pass
-        scores = [match.score_home, match.score_away]
-        scores[rivals.index(player.team_info)] += 1
+
+        scores = [match.score_home or 0, match.score_away or 0]
+        scores[rivals.index(team_info)] += 1
         # type: datetime
         starts = (match.first_half_start, match.second_half_start)
         half_start = max(filter(None, starts))
 
         # type: MatchEvent
-        match_event = MatchEvent.objects.create(
+        match_event = MatchEvent(
             match=match,
             player=player,
-            team_info=player.team_info,
+            team_info=team_info,
             type=MatchEvent.TYPE_GOAL,
             score_home=scores[0],
             score_away=scores[1],

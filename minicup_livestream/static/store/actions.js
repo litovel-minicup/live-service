@@ -46,7 +46,7 @@ export default {
             console.log(response.body);
             commit('setLoggedIn', !!response.body.success);
         }, response => {
-            // TODO: error
+            console.error('Login failed.')
         });
     },
     startHalf({commit}) {
@@ -56,11 +56,12 @@ export default {
         commit('stopTimer');
     },
 
-    goal({dispatch, state}, {player}) {
+    goal({dispatch, state}, {player, team}) {
         dispatch('sendObj', {
             action: 'goal',
             match: state.match.id,
-            player: player,
+            player,
+            team,
         });
     },
     deleteEvent({dispatch, state}, event) {

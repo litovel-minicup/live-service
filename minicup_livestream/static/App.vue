@@ -4,6 +4,7 @@
             <spinner :enable="hasConnectionProblem"/>
         </div>
         <b-container v-if="loggedIn">
+            <navigation/>
             <router-view/>
         </b-container>
         <div v-else>
@@ -21,6 +22,7 @@
 <script>
     import Spinner from './components/Spinner'
     import LoginForm from './components/LoginForm'
+    import Navigation from './components/Navigation'
     import {mapState} from 'vuex'
 
     export default {
@@ -28,6 +30,7 @@
         components: {
             Spinner,
             LoginForm,
+            Navigation,
         },
         computed: {
             hasConnectionProblem() {

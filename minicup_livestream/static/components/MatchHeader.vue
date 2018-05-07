@@ -4,7 +4,7 @@
             <div class="col-6 text-right team-name" :title="match.home_team_name" :style="{ borderBottomColor: match.home_team_color }">
                 {{ match.home_team_name }}
             </div>
-            <div class="col-6 team-name" :title="match.away_team_name"  :style="{ borderBottomColor: match.away_team_color }">
+            <div class="col-6 team-name" :title="match.away_team_name" :style="{ borderBottomColor: match.away_team_color }">
                 {{ match.away_team_name }}
             </div>
         </div>
@@ -107,7 +107,7 @@
                 const start = this.match.second_half_start ? this.match.second_half_start : this.match.first_half_start;
                 this.timerCount = (Number(Date.now() / 1000) - start) | 0;
 
-                if (this.timerCount > 600 && this.$store.state.running) {
+                if (this.timerCount > 600) {
                     this.$store.dispatch('endHalf').then(() => {
                         this.timerCount = 0
                     });

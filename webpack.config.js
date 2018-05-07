@@ -74,7 +74,13 @@ module.exports = {
     devServer: {
         historyApiFallback: true,
         noInfo: true,
-        overlay: true
+        overlay: true,
+        proxy: {
+            '**': {
+                target: 'http://localhost:8888',
+                secure: false
+            }
+        }
     },
     performance: {
         hints: false

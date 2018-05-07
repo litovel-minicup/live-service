@@ -41,12 +41,19 @@ export default {
             // TODO: error
         });
     },
-    login({commit}, {pin, xsrf}) {
-        return Vue.http.post('/api/login?_xsrf=' + xsrf.toString(), {pin}).then(response => {
+    login({commit}, {pin}) {
+        return Vue.http.post('/api/login', {pin}).then(response => {
             console.log(response.body);
             commit('setLoggedIn', !!response.body.success);
         }, response => {
             console.error('Login failed.')
+        });
+    },
+    logout({commit}) {
+        return Vue.http.post('/api/logout').then(response => {
+            commit('setLoggedIn', false);
+        }, response => {
+            console.error('Logout failed.')
         });
     },
     startHalf({commit}) {

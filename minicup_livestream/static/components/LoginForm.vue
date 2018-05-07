@@ -2,9 +2,9 @@
     <div class="login-form" @click="click">
         <div class="row mb-2 justify-content-center">
             <div class="col-4">
-                <form class="form" @submit="send">
+                <form class="form" @submit.prevent="send">
                     <label>
-                        <input type="password" v-model="pin" class="form-control">
+                        <input type="password" ref="pin" v-model="pin" autofocus class="form-control">
                         <input type="submit" class="form-control" value="Login">
                     </label>
                 </form>
@@ -24,11 +24,12 @@
             send() {
                 this.$store.dispatch('login', {
                     pin: this.pin,
-                    xsrf: this.$cookie.get('_xsrf')
                 }).then(() => {
                     if (!this.$store.state.loggedIn) {
                         this.$toastr.w('Incorrect PIN.');
                         this.pin = '';
+                    } else {
+                        this.$toastr.i('Logged in.');
                     }
                 });
             }

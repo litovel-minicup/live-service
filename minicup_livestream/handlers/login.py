@@ -19,3 +19,11 @@ class LoginHandler(BaseHandler):
         self.write(dict(
             success=True
         ))
+
+
+class LogoutHandler(BaseHandler):
+    def post(self):
+        self.clear_cookie(LoginHandler.COOKIE_USER)
+        self.write(dict(
+            success=True
+        ))

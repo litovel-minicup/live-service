@@ -8,11 +8,11 @@ from .utils import login_required
 
 
 class BaseHandler(RequestHandler):
-    arguments_json = None # type: Optional[dict]
+    arguments_json = None  # type: Optional[dict]
 
     def prepare(self):
         if self.request.headers["Content-Type"].startswith("application/json"):
-            self.arguments_json = json.loads(self.request.body.decode('utf-8'))
+            self.arguments_json = json.loads(self.request.body.decode('utf-8') or '{}')
 
 
 class AuthenticatedBaseHandler(BaseHandler):

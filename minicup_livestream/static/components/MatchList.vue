@@ -8,7 +8,7 @@
                     :key="m.id"
             >
                 <b-col>{{ m.name }}</b-col>
-                <b-col class="text-right">{{ m.date }}</b-col>
+                <b-col class="text-right">{{ m.state | onlineStateName }} | {{ m.date }}</b-col>
             </b-list-group-item>
         </b-list-group>
 

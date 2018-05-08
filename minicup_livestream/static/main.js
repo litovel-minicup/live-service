@@ -49,6 +49,15 @@ Number.prototype.pad = function (size, char = '0') {
     return sign + new Array(size).concat([Math.abs(this)]).join(char).slice(-size);
 };
 
+Vue.filter("onlineStateName", state => {
+    return {
+        'init': 'před zápasem',
+        'half_first': '1. poločas',
+        'pause': 'přestávka',
+        'half_second': '2. poločas',
+        'end': 'po zápase'
+    }[state];
+});
 
 const app = new Vue({
     el: '#app',

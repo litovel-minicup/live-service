@@ -1,8 +1,5 @@
 <template>
     <div>
-        <div class="spinner">
-            <spinner :enable="hasConnectionProblem"/>
-        </div>
         <div v-if="loggedIn">
             <navigation/>
             <router-view/>
@@ -15,6 +12,10 @@
                     </div>
                 </div>
             </b-container>
+        </div>
+
+        <div class="spinner">
+            <spinner :enable="hasConnectionProblem"/>
         </div>
     </div>
 </template>

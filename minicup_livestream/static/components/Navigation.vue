@@ -10,7 +10,7 @@
                 </b-navbar-nav> -->
 
                 <!-- Right aligned nav items -->
-                <b-navbar-nav class="ml-auto">
+                <b-navbar-nav class="ml-auto mr-4">
                     <b-nav-item @click="logout()">
                         Odhlásit se
                     </b-nav-item>

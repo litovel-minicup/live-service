@@ -2,10 +2,12 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-6 text-right team-name" :title="match.home_team_name" :style="{ borderBottomColor: match.home_team_color }">
+                <small class="font-weight-light text-muted font-italic" v-if="match.home_team_color_name">({{ match.home_team_color_name }})</small>
                 {{ match.home_team_name }}
             </div>
             <div class="col-6 team-name" :title="match.away_team_name" :style="{ borderBottomColor: match.away_team_color }">
                 {{ match.away_team_name }}
+                <small class="font-weight-light text-muted font-italic" v-if="match.away_team_color_name">({{ match.away_team_color_name }})</small>
             </div>
         </div>
         <div class="row mt-2 justify-content-center">
@@ -20,7 +22,7 @@
         </div>
         <div class="row justify-content-center">
             <div class="col text-center display-5">
-                {{ stateLabel }}
+                {{ state | onlineStateName }}
             </div>
         </div>
         <div class="row no-gutters mt-2 d-flex align-items-center justify-content-center">
@@ -70,15 +72,6 @@
             },
             isRunning() {
                 return this.state === 'half_first' || this.state === 'half_second'
-            },
-            stateLabel() {
-                return {
-                    'init': 'před zápasem',
-                    'half_first': '1. poločas',
-                    'pause': 'přestávka',
-                    'half_second': '2. poločas',
-                    'end': 'po zápase'
-                }[this.state]
             }
         },
         beforeMount() {
@@ -107,7 +100,7 @@
                 const start = this.match.second_half_start ? this.match.second_half_start : this.match.first_half_start;
                 this.timerCount = (Number(Date.now() / 1000) - start) | 0;
 
-                if (this.timerCount > 600) { // TODO: configurable limit
+                if (this.timerCount > this.$store.state.match.half_length) {
                     this.$store.dispatch('endHalf').then(() => {
                         this.timerCount = 0
                     });

@@ -1,6 +1,5 @@
 # coding=utf-8
 from django.shortcuts import get_object_or_404
-from tornado.web import RequestHandler
 
 from minicup_administration.core.models import Category, Match, TeamInfo
 from minicup_livestream.handlers.base import AuthenticatedBaseHandler
@@ -22,7 +21,8 @@ class MatchListHandler(AuthenticatedBaseHandler):
             dict(
                 id=m.id,
                 name=str(m),
-                date=str(m.match_term)
+                date=str(m.match_term),
+                state=m.online_state
             ) for m in Match.objects.filter(
                 category_id=category_id,
                 confirmed__isnull=True,
@@ -32,8 +32,7 @@ class MatchListHandler(AuthenticatedBaseHandler):
 
 class MatchHandler(AuthenticatedBaseHandler):
     def get(self, match_id):
-        # type: Match
-        match = get_object_or_404(Match, pk=match_id)
+        match = get_object_or_404(Match, pk=match_id)  # type: Match
 
         def players(team_info: TeamInfo):
             return [
@@ -60,5 +59,3 @@ class MatchEventsHandler(AuthenticatedBaseHandler):
                 me.serialize() for me in match.match_match_event.all()
             ]
         ))
-
-

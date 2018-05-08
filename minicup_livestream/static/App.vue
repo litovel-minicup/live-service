@@ -3,10 +3,10 @@
         <div class="spinner">
             <spinner :enable="hasConnectionProblem"/>
         </div>
-        <b-container v-if="loggedIn">
+        <div v-if="loggedIn">
             <navigation/>
             <router-view/>
-        </b-container>
+        </div>
         <div v-else>
             <b-container>
                 <div style="height: 100vh;" class="row justify-content-center align-items-center">

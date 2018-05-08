@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <b-container>
         <h1>Výběr zápasu</h1>
         <b-list-group class="list-group">
             <b-list-group-item href="#" class="row"
@@ -11,7 +11,9 @@
                 <b-col class="text-right">{{ m.date }}</b-col>
             </b-list-group-item>
         </b-list-group>
-    </div>
+
+        <b-btn type="primary" block @click="count += 10" class="mt-4">Načíst další</b-btn>
+    </b-container>
 </template>
 
 <script>
@@ -23,9 +25,14 @@
         computed: mapState({
             matches: 'matches',
             nearestMatches(state) {
-                return _.slice(this.$store.state.matches, 0, 30)
+                return _.slice(this.$store.state.matches, 0, this.count)
             }
         }),
+        data() {
+            return {
+                count: 10
+            }
+        },
         methods: {
             setMatch(id) {
                 this.$router.push({name: 'match', params: {match: id}});

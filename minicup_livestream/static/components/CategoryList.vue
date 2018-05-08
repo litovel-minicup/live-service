@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <b-container>
         <h1>Výběr kategorie</h1>
         <div class="list-group">
             <a
@@ -11,7 +11,7 @@
                 {{ cat.name }}
             </a>
         </div>
-    </div>
+    </b-container>
 </template>
 
 <script>

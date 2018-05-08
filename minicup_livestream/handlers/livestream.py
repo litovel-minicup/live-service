@@ -173,7 +173,15 @@ class LivestreamHandler(WebSocketHandler):
             match.score_home, match.score_away = before.score
         else:
             match.score_home, match.score_away = 0, 0
-        # TODO: cannot delete any event
+
+        if match.confirmed:
+            # TODO: old events cannot be deleted
+            self.write_message(dict(
+                match=match.serialize(),
+                success=False,
+            ))
+            return
+
         event.delete()
         match.save(update_fields=('score_home', 'score_away'))
 

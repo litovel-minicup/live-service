@@ -30,8 +30,7 @@ def near_end(me, threshold=20):
     return (Match.HALF_LENGTH.total_seconds() - me.time_offset) < threshold
 
 
-def near_half_end_p(me: MatchEvent):
-    return near_end(me)
+near_half_end_p = need_player(near_end)
 
 
 def nth_match_goals_fulfill_p(count):
@@ -57,9 +56,14 @@ def match_score(me: MatchEvent):
     return len(set(me.score)) == 1
 
 
-@need_player
-def anywhere_p(me: MatchEvent):
+match_score_p = need_player(match_score)
+
+
+def anywhere(me: MatchEvent):
     return True
+
+
+anywhere_p = need_player(anywhere)
 
 
 def is_difference_change_match_event(positive):
@@ -107,8 +111,8 @@ class MatchEventMessageGenerator(object):
         (nth_player_goals_fulfill_p(10), 'Desátou brankou prokazuje {player} střeleckou formu!'),
         (nth_player_goals_fulfill_p(10), 'Střelec utkání {player} se prosazuje podesáté!'),
 
-        (match_score, 'Střela a {player} vyrovnává stav utkání!'),
-        (match_score, '{player} srovnává stav tohoto utkání!'),
+        (match_score_p, 'Střela a {player} vyrovnává stav utkání!'),
+        (match_score_p, '{player} srovnává stav tohoto utkání!'),
 
         (is_lose_decrease_goal_p, '{player} snížil stav utkání!'),
         (is_lose_decrease_goal_p, '{player} snižuje gólový deficit svého týmu!'),
@@ -128,6 +132,12 @@ class MatchEventMessageGenerator(object):
 
         # (lambda me: True, '{player} potvrzuje vedení týmu {team}!'),
         # (lambda me: True, '{player} potvrzuje debakl {opposite_team}!'),
+        (anywhere, 'Další branka na účet tohoto utkání.'),
+        (anywhere, 'Máme tu změnu skóre.'),
+        (anywhere, 'Ukazatel skóre se opět mění.'),
+        (anywhere, 'Tým {team} se prosazuje.'),
+        (anywhere, 'Změna stavu utkání.'),
+        (anywhere, 'Míč je opět v bráně.'),
     )  # type: Tuple[Tuple[Rule, str]]
 
     def generate(self, match_event: MatchEvent):

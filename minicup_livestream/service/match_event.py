@@ -1,4 +1,5 @@
 # coding=utf-8
+from operator import itemgetter
 from random import choice
 from typing import Callable, Tuple
 
@@ -66,6 +67,10 @@ def anywhere(me: MatchEvent):
 anywhere_p = need_player(anywhere)
 
 
+def without_player(me: MatchEvent):
+    return not bool(me.player)
+
+
 def is_difference_change_match_event(positive):
     def _(me: MatchEvent):
         selected = sorted(
@@ -83,6 +88,26 @@ is_lose_decrease_goal_p = need_player(is_lose_decrease_goal)
 
 is_win_increase_goal = is_difference_change_match_event(positive=True)
 is_win_increase_goal_p = need_player(is_win_increase_goal)
+
+
+def is_threshold_difference(threshold=5, positive=True):
+    def _(me: MatchEvent):
+        teams = (me.match.home_team_info, me.match.away_team_info)
+        scorer_index = teams.index(me.team_info)
+        opposite_index = (1, 0)[scorer_index]
+        if positive:
+            return (me.score[scorer_index] - me.score[opposite_index]) > threshold
+        else:
+            return (me.score[opposite_index] - me.score[scorer_index]) > threshold
+
+    return _
+
+
+is_win_threshold_difference = is_threshold_difference()
+is_lose_threshold_difference = is_threshold_difference(positive=False)
+
+is_win_threshold_difference_p = need_player(is_win_threshold_difference)
+is_lose_threshold_difference_p = need_player(is_lose_threshold_difference)
 
 
 class MatchEventMessageGenerator(object):
@@ -130,34 +155,38 @@ class MatchEventMessageGenerator(object):
         (anywhere_p, '{player} skóroval!'),
         (anywhere_p, '{player} se přesvědčivě prosazuje!'),
 
-        # (lambda me: True, '{player} potvrzuje vedení týmu {team}!'),
-        # (lambda me: True, '{player} potvrzuje debakl {opposite_team}!'),
-        (anywhere, 'Další branka na účet tohoto utkání.'),
-        (anywhere, 'Máme tu změnu skóre.'),
-        (anywhere, 'Ukazatel skóre se opět mění.'),
-        (anywhere, 'Tým {team} se prosazuje.'),
-        (anywhere, 'Změna stavu utkání.'),
-        (anywhere, 'Míč je opět v bráně.'),
+        (is_win_threshold_difference_p, '{player} potvrzuje vedení týmu {team}!'),
+        (is_win_threshold_difference_p, '{player} potvrzuje vysokou převahu týmu {team}!'),
+        (is_win_threshold_difference_p, '{player} potvrzuje debakl týmu {opposite_team}!'),
+
+        (is_lose_threshold_difference_p, '{player} snižuje z pohledu {team}!'),
+        (is_lose_threshold_difference_p, '{player} snižuje golový deficit týmu {team}!'),
+        (is_lose_threshold_difference_p, '{player} se snaží brankou zabránit debakl týmu {team}!'),
+
+        (without_player, 'Další branka na účet tohoto utkání.'),
+        (without_player, 'Máme tu změnu skóre.'),
+        (without_player, 'Ukazatel skóre se opět mění.'),
+        (without_player, 'Tým {team} se prosazuje.'),
+        (without_player, 'Změna stavu utkání.'),
+        (without_player, 'Míč je opět v bráně.'),
+        (without_player, 'Tým {team} se prosazuje.'),
     )  # type: Tuple[Tuple[Rule, str]]
 
     def generate(self, match_event: MatchEvent):
         player = match_event.player
-        scores = match_event.score_home, match_event.score_away
 
-        filtered = []
-        messages_len = len(self.MESSAGES)
-        adding = False
-        i = 0
-        while i < messages_len:
-            cb, msg = self.MESSAGES[i]
-            if cb(match_event):
-                adding = True
-                filtered.append(msg)
-                i += 1
-                continue
-            elif adding:
-                break
-            i += 1
+        filtered = tuple(
+            map(
+                itemgetter(1),
+                filter(
+                    itemgetter(0),
+                    map(
+                        lambda t: (t[0](match_event), t[1]),
+                        self.MESSAGES
+                    )
+                )
+            )
+        )
         if filtered:
             return choice(filtered).format(
                 player=player,

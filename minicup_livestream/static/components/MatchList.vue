@@ -23,7 +23,7 @@
         computed: mapState({
             matches: 'matches',
             nearestMatches(state) {
-                return _.slice(this.$store.state.matches, 0, 10)
+                return _.slice(this.$store.state.matches, 0, 30)
             }
         }),
         methods: {

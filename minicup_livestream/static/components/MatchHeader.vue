@@ -107,7 +107,7 @@
                 const start = this.match.second_half_start ? this.match.second_half_start : this.match.first_half_start;
                 this.timerCount = (Number(Date.now() / 1000) - start) | 0;
 
-                if (this.timerCount > 600) {
+                if (this.timerCount > 600) { // TODO: configurable limit
                     this.$store.dispatch('endHalf').then(() => {
                         this.timerCount = 0
                     });

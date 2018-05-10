@@ -92,8 +92,7 @@ is_win_increase_goal_p = need_player(is_win_increase_goal)
 
 def is_threshold_difference(threshold=5, positive=True):
     def _(me: MatchEvent):
-        teams = (me.match.home_team_info, me.match.away_team_info)
-        scorer_index = teams.index(me.team_info)
+        scorer_index = me.match.teams.index(me.team_info)
         opposite_index = (1, 0)[scorer_index]
         if positive:
             return (me.score[scorer_index] - me.score[opposite_index]) > threshold

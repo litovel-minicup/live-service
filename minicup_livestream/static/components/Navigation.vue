@@ -2,7 +2,7 @@
     <b-navbar toggleable="md" variant="light">
         <b-container>
             <b-navbar-toggle target="navbar"/>
-            <b-navbar-brand href='#' @click="$router.push({name: 'home'})">MC18 živé přenosy</b-navbar-brand>
+            <b-navbar-brand href='#' @click="$router.push({name: 'home'})">MC18 živé přenosy {{ $store.state.match.category_name }}</b-navbar-brand>
             <b-collapse is-nav id="navbar">
                 <!-- <b-navbar-nav>
                     <b-nav-item href="#">Link</b-nav-item>

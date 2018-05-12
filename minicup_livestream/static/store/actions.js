@@ -29,7 +29,7 @@ export default {
     loadMatch(context, {match}) {
         Vue.http.get('/api/match/' + match.toString()).then(response => {
             this.commit('setMatch', response.body);
-            this.commit('doFsmAction', 'load_' + response.body.state);
+            this.commit('goToFsmState', response.body.state);
         }, response => {
             // TODO: error
         });
@@ -80,6 +80,7 @@ export default {
         console.log(event);
     },
     sendObj({state, commit}, obj) {
+        console.log('Socket message', obj);
         if (state.socket.isConnected) {
             this.$socket.sendObj(obj)
         } else {

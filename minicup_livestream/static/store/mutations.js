@@ -24,6 +24,10 @@ export default {
     doFsmAction(state, action) {
         state.fsm.do(action);
     },
+
+    goToFsmState(state, fsmState) {
+        state.fsm.go(fsmState, true); // force go
+    },
     startTimer(state) {
         this.commit('doFsmAction', 'start');
     },

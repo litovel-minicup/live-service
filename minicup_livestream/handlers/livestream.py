@@ -91,7 +91,8 @@ class LivestreamHandler(WebSocketHandler):
             type=MatchEvent.TYPE_GOAL,
             score_home=scores[0],
             score_away=scores[1],
-            time_offset=int((now() - half_start).total_seconds()),
+            # not longer then half length
+            time_offset=min((int((now() - half_start).total_seconds()), Match.HALF_LENGTH.total_seconds())),
             half_index=starts.index(half_start)
         )
         match_event.message = self.match_event_message_generator.generate(match_event=match_event)

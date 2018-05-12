@@ -34,7 +34,7 @@
                 </transition>
             </div>
             <div class="col display-4 text-center" style="font-family:monospace;">
-                {{ match.score[0] || '-' }}:{{ match.score[1] || '-' }}
+                {{ match.score[0] | score }}:{{ match.score[1] | score }}
             </div>
             <div class="col display-4">
                 <transition name="scale-out">
@@ -61,6 +61,12 @@
         methods: {
             start() {
                 this.$store.dispatch('startHalf')
+            }
+        },
+        filters: {
+            score(val) {
+                if (val === null) return '-';
+                return val;
             }
         },
         computed: {
@@ -100,7 +106,10 @@
                 const start = this.match.second_half_start ? this.match.second_half_start : this.match.first_half_start;
                 this.timerCount = (Number(Date.now() / 1000) - start) | 0;
 
-                if (this.timerCount > this.$store.state.match.half_length) {
+                if (
+                    this.timerCount > this.$store.state.match.half_length &&
+                    ['half_first', 'half_second'].indexOf(this.$store.state.fsm.state) >= 0
+                ) {
                     this.$store.dispatch('endHalf').then(() => {
                         this.timerCount = 0
                     });

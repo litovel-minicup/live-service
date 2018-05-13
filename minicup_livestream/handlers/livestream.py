@@ -13,13 +13,17 @@ from tornado.websocket import WebSocketHandler
 from minicup_administration.core.models import Match, MatchEvent, Player, TeamInfo
 from ..service.match_event import MatchEventMessageGenerator
 
-
 logger = logging.getLogger(__name__)
+
 
 class LivestreamHandler(WebSocketHandler):
     subscribers = defaultdict(set)  # type: DefaultDict[int, Set[WebSocketHandler]]
 
     match_event_message_generator = MatchEventMessageGenerator()
+
+    def check_origin(self, origin):
+        # TODO: check by livestream service URL
+        return 'localhost' in origin or super().check_origin(origin=origin)
 
     def __init__(self, application, request, **kwargs):
         super().__init__(application, request, **kwargs)
@@ -59,10 +63,13 @@ class LivestreamHandler(WebSocketHandler):
             self._delete_event(data)
         elif data.get('action') == 'subscribe':
             self.subscribe_from_data(data=data)
+            match = Match.objects.get(pk=data.get('match'))
+            self.write_message(dict(match=match.serialize()))
             logger.info(data)
 
     def subscribe_from_data(self, data):
-        self.subscribe(match=Match.objects.get(pk=data.get('match')), subscriber=self)
+        match = Match.objects.get(pk=data.get('match'))
+        self.subscribe(match=match, subscriber=self)
 
     def _process_goal(self, data):
         match = Match.objects.get(pk=data.get('match'))
@@ -110,7 +117,7 @@ class LivestreamHandler(WebSocketHandler):
     def notify(cls, match: Match, message: Union[dict, str]):
         for sub in cls.subscribers[match.id]:  # type: WebSocketHandler
             sub.write_message(message)
-            logger.info('NOTIFY: {} - {}'.format(sub, str(message)[:50]))
+            logger.info('NOTIFY: {} - {}'.format(sub, str(message)))
 
     @classmethod
     def unsubscribe(cls, subscriber: WebSocketHandler, match: Match = None):
@@ -147,7 +154,7 @@ class LivestreamHandler(WebSocketHandler):
 
     def _half_end_callback(self, match_: Match):
         def cb(handler: LivestreamHandler = self, match: Match = match_):
-            match.refresh_from_db(fields=('online_state',))
+            match.refresh_from_db()
 
             if match.online_state == Match.STATE_HALF_FIRST:
                 match.change_state(Match.STATE_HALF_PAUSE)

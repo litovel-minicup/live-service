@@ -14,6 +14,8 @@ from minicup_administration.core.models import Match, MatchEvent, Player, TeamIn
 from ..service.match_event import MatchEventMessageGenerator
 
 
+logger = logging.getLogger(__name__)
+
 class LivestreamHandler(WebSocketHandler):
     subscribers = defaultdict(set)  # type: DefaultDict[int, Set[WebSocketHandler]]
 
@@ -30,22 +32,22 @@ class LivestreamHandler(WebSocketHandler):
         pass
 
     def open(self, *args, **kwargs):
-        logging.info('OPEN: ')
+        logger.debug('OPEN: ')
         if self.get_secure_cookie('user'):
             self.write_message(dict(
                 logged=True
             ))
 
     def on_close(self):
-        logging.info('CLOSE: ')
+        logger.info('CLOSE: ')
         self.unsubscribe(self)
 
     @transaction.atomic
     def on_message(self, message):
-        logging.info("got message %r", message)
+        logger.debug("Message: %r", message)
         data = json_decode(message)
 
-        logging.info(data.get('action', '').upper())
+        logger.info('{}: {}'.format(data.get('action', '').upper(), data))
         if data.get('action') == 'goal':
             self.subscribe_from_data(data=data)
             self._process_goal(data)
@@ -57,7 +59,7 @@ class LivestreamHandler(WebSocketHandler):
             self._delete_event(data)
         elif data.get('action') == 'subscribe':
             self.subscribe_from_data(data=data)
-            logging.info(data)
+            logger.info(data)
 
     def subscribe_from_data(self, data):
         self.subscribe(match=Match.objects.get(pk=data.get('match')), subscriber=self)
@@ -74,7 +76,7 @@ class LivestreamHandler(WebSocketHandler):
         rivals = (match.home_team_info, match.away_team_info)
         if player and player.team_info != team_info:
             # TODO: problem
-            logging.error('Player {} cannot score for team match {}.'.format(player, team_info))
+            logger.error('Player {} cannot score for team match {}.'.format(player, team_info))
             pass
 
         scores = [match.score_home or 0, match.score_away or 0]
@@ -108,12 +110,12 @@ class LivestreamHandler(WebSocketHandler):
     def notify(cls, match: Match, message: Union[dict, str]):
         for sub in cls.subscribers[match.id]:  # type: WebSocketHandler
             sub.write_message(message)
-            logging.info('NOTIFY: {} - {}'.format(sub, str(message)[:50]))
+            logger.info('NOTIFY: {} - {}'.format(sub, str(message)[:50]))
 
     @classmethod
     def unsubscribe(cls, subscriber: WebSocketHandler, match: Match = None):
         if match and subscriber in cls.subscribers[match]:
-            cls.subscribers[match].remove(subscriber)
+            cls.subscribers[match.id].remove(subscriber)
             return
         for m in cls.subscribers.values():
             if subscriber in m:
@@ -167,7 +169,7 @@ class LivestreamHandler(WebSocketHandler):
     def _delete_event(self, data):
         event = MatchEvent.objects.get(pk=data.get('event'))  # type: MatchEvent
         match = event.match
-        logging.info('Deleting {}.'.format(event))
+        logger.info('Deleting {}.'.format(event))
         before = match.match_match_event.exclude(pk=event.pk).last()  # type: MatchEvent
 
         if before:

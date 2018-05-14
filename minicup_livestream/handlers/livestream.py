@@ -136,7 +136,8 @@ class LivestreamHandler(WebSocketHandler):
         match = Match.objects.get(pk=data.get('match'))
         state = data.get('state')
 
-        if not match.change_state(state):
+        event = match.change_state(state)
+        if not event:
             return
 
         if state == Match.STATE_HALF_FIRST:
@@ -148,22 +149,22 @@ class LivestreamHandler(WebSocketHandler):
             IOLoop.current().call_later(Match.HALF_LENGTH.total_seconds(), self._half_end_callback(match_=match))
 
         match.save(update_fields=('first_half_start', 'second_half_start',))
-        self.notify(match, dict(
-            match=match.serialize()
-        ))
+
+        data = dict(match=match.serialize(), event=event.serialize() if event else None)
+        self.notify(match, {k: v for k, v in data.items() if v})
 
     def _half_end_callback(self, match_: Match):
         def cb(handler: LivestreamHandler = self, match: Match = match_):
             match.refresh_from_db()
 
+            event = None
             if match.online_state == Match.STATE_HALF_FIRST:
-                match.change_state(Match.STATE_HALF_PAUSE)
+                event = match.change_state(Match.STATE_HALF_PAUSE)
             elif match.online_state == Match.STATE_HALF_SECOND:
-                match.change_state(Match.STATE_END)
+                event = match.change_state(Match.STATE_END)
 
-            handler.notify(match, dict(
-                match=match.serialize()
-            ))
+            data = dict(match=match.serialize(), event=event.serialize() if event else None)
+            handler.notify(match, {k: v for k, v in data.items() if v})
 
         return cb
 

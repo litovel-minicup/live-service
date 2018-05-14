@@ -7,8 +7,8 @@
                     class="list-group-item d-flex justify-content-between align-items-center"
             >
                 <span>
-                    <b-badge>{{ event.halfIndex + 1}}/2 | {{ event.timeOffset | prettyTime }}</b-badge>
-                    {{ event.message }} (<strong>{{ event.score[0] }}:{{ event.score[1] }}</strong>)
+                    <b-badge>{{ event.half_index + 1}}/2 | {{ event.time_offset | prettyTime }}</b-badge>
+                    {{ event | eventMessage }} (<strong>{{ event.score[0] }}:{{ event.score[1] }}</strong>)
                 </span>
                 <button type="button" class="btn btn-danger" v-if="canDelete(event)" @click="deleteEvent(event)">
                     <span class="close">&times;</span>
@@ -27,9 +27,15 @@
                 secs = Number(secs);
                 return `${Math.floor(secs / 60).pad(2)}:${(secs % 60).pad(2)}`;
             },
+            eventMessage(event) {
+                if (event.message) return event.message;
+                return `${{end: 'Konec', start: 'Začátek'}[event.type]} ${event.half_index + 1}. poločasu`;
+            }
         },
         methods: {
             canDelete(event) {
+                if (event.type !== 'goal') return false;
+                // TODO: restrict to time
                 const last = this.sorted[0];
                 return last.id === event.id;
             },
@@ -39,7 +45,7 @@
         },
         computed: {
             sorted() {
-                return _.reverse(_.sortBy(this.events, ['halfIndex'], ['timeOffset']));
+                return _.reverse(_.sortBy(this.events, ['half_index'], ['time_offset']));
             }
         }
     }

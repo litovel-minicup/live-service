@@ -4,6 +4,7 @@ import logging
 from collections import defaultdict
 from typing import DefaultDict, Set, Union
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.utils.timezone import now
 from tornado.escape import json_decode
@@ -16,6 +17,19 @@ from ..service.match_event import MatchEventMessageGenerator
 logger = logging.getLogger(__name__)
 
 
+class PermissionDenied(Exception):
+    pass
+
+
+def check_user(fc):
+    def _(self: "LivestreamHandler", *args, **kwargs):
+        if not self.get_secure_cookie('user'):
+            raise PermissionDenied()
+        return fc(self, *args, **kwargs)
+
+    return _
+
+
 class LivestreamHandler(WebSocketHandler):
     subscribers = defaultdict(set)  # type: DefaultDict[int, Set[WebSocketHandler]]
 
@@ -23,7 +37,7 @@ class LivestreamHandler(WebSocketHandler):
 
     def check_origin(self, origin):
         # TODO: check by livestream service URL
-        return 'localhost' in origin or super().check_origin(origin=origin)
+        return True or super().check_origin(origin=origin)
 
     def __init__(self, application, request, **kwargs):
         super().__init__(application, request, **kwargs)
@@ -36,41 +50,71 @@ class LivestreamHandler(WebSocketHandler):
         pass
 
     def open(self, *args, **kwargs):
-        logger.debug('OPEN: ')
+        logger.debug('OPEN: {}'.format(self))
         if self.get_secure_cookie('user'):
             self.write_message(dict(
                 logged=True
             ))
 
     def on_close(self):
-        logger.info('CLOSE: ')
+        logger.debug('CLOSE: {}'.format(self))
         self.unsubscribe(self)
 
     @transaction.atomic
     def on_message(self, message):
-        logger.debug("Message: %r", message)
-        data = json_decode(message)
+        try:
+            data = json_decode(message)
+        except ValueError as e:
+            self.write_message(dict(
+                success=False,
+                message=str(e)
+            ))
+            return
 
+        logger.debug("Message: %r", data)
+        try:
+            self._process_message(data)
+        except ObjectDoesNotExist as e:
+            self.write_message(dict(
+                success=False,
+                message=str(e)
+            ))
+        except PermissionDenied as e:
+            self.write_message(dict(
+                success=False,
+                message='Not enough perms to perform action.'
+            ))
+
+    def _process_message(self, data: dict):
         logger.info('{}: {}'.format(data.get('action', '').upper(), data))
         if data.get('action') == 'goal':
             self.subscribe_from_data(data=data)
             self._process_goal(data)
+
         elif data.get('action') == 'state_change':
             self.subscribe_from_data(data=data)
             self._process_state_change(data)
+
         elif data.get('action') == 'delete_event':
             self.subscribe_from_data(data=data)
             self._delete_event(data)
+
         elif data.get('action') == 'subscribe':
             self.subscribe_from_data(data=data)
             match = Match.objects.get(pk=data.get('match'))
+
             self.write_message(dict(match=match.serialize()))
-            logger.info(data)
+        else:
+            self.write_message(dict(
+                success=False,
+                message='Unknown action {}.'.format(data.get('action'))
+            ))
 
     def subscribe_from_data(self, data):
         match = Match.objects.get(pk=data.get('match'))
         self.subscribe(match=match, subscriber=self)
 
+    @check_user
     def _process_goal(self, data):
         match = Match.objects.get(pk=data.get('match'))
         team_info = TeamInfo.objects.get(pk=data.get('team'))
@@ -113,25 +157,7 @@ class LivestreamHandler(WebSocketHandler):
             match=match.serialize(),
         ))
 
-    @classmethod
-    def notify(cls, match: Match, message: Union[dict, str]):
-        for sub in cls.subscribers[match.id]:  # type: WebSocketHandler
-            sub.write_message(message)
-            logger.info('NOTIFY: {} - {}'.format(sub, str(message)))
-
-    @classmethod
-    def unsubscribe(cls, subscriber: WebSocketHandler, match: Match = None):
-        if match and subscriber in cls.subscribers[match]:
-            cls.subscribers[match.id].remove(subscriber)
-            return
-        for m in cls.subscribers.values():
-            if subscriber in m:
-                m.remove(subscriber)
-
-    @classmethod
-    def subscribe(cls, match: Match, subscriber: WebSocketHandler):
-        cls.subscribers[match.id].add(subscriber)
-
+    @check_user
     def _process_state_change(self, data):
         match = Match.objects.get(pk=data.get('match'))
         state = data.get('state')
@@ -168,12 +194,7 @@ class LivestreamHandler(WebSocketHandler):
 
         return cb
 
-    def __str__(self):
-        return '{}({})'.format(
-            self.__class__.__name__,
-            dict(self.request.headers).get('User-Agent'),
-        )
-
+    @check_user
     def _delete_event(self, data):
         event = MatchEvent.objects.get(pk=data.get('event'))  # type: MatchEvent
         match = event.match
@@ -202,3 +223,32 @@ class LivestreamHandler(WebSocketHandler):
                 e.serialize() for e in match.match_match_event.all()
             ]
         ))
+
+    @classmethod
+    def notify(cls, match: Match, message: Union[dict, str]):
+        logger.info('NOTIFY: {} subs, {}: {}'.format(
+            len(cls.subscribers[match.id]),
+            message.get('match', {}).get('id') or message.get('event', {}).get('id'),
+            str(message)[:50]
+        ))
+        for sub in cls.subscribers[match.id]:  # type: WebSocketHandler
+            sub.write_message(message)
+
+    @classmethod
+    def unsubscribe(cls, subscriber: WebSocketHandler, match: Match = None):
+        if match and subscriber in cls.subscribers[match]:
+            cls.subscribers[match.id].remove(subscriber)
+            return
+        for m in cls.subscribers.values():
+            if subscriber in m:
+                m.remove(subscriber)
+
+    @classmethod
+    def subscribe(cls, match: Match, subscriber: WebSocketHandler):
+        cls.subscribers[match.id].add(subscriber)
+
+    def __str__(self):
+        return '{}({})'.format(
+            self.__class__.__name__,
+            dict(self.request.headers).get('User-Agent'),
+        )

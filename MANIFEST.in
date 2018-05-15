@@ -1,4 +1,3 @@
 
-
-include minicup_livestream/static/build/build.js
-graft minicup_livestream/templates
+include minicup_live_service/static/build/build.js
+graft minicup_live_service/templates

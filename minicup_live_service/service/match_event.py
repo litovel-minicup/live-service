@@ -3,7 +3,7 @@ from operator import itemgetter
 from random import choice
 from typing import Callable, Tuple
 
-from minicup_administration.core.models import MatchEvent, Match, TeamInfo
+from minicup_model.core.models import MatchEvent, Match, TeamInfo
 
 
 class Score(tuple):
@@ -71,6 +71,11 @@ def without_player(me: MatchEvent):
     return not bool(me.player)
 
 
+def without_player_not_first(me: MatchEvent):
+    is_first = me.score[me.match.teams.index(me.team_info)] == 1
+    return not bool(me.player) and not is_first
+
+
 def is_difference_change_match_event(positive):
     def _(me: MatchEvent):
         selected = sorted(
@@ -114,13 +119,12 @@ class MatchEventMessageGenerator(object):
     MESSAGES = (
         (nth_match_goals_fulfill_p(1), '{player} otevírá gólový účet tohoto zápasu!'),
         (nth_match_goals_fulfill_p(1), '{player} poprvé rozvlnil sít v tomto zápase!'),
-
-        (nth_player_goals_fulfill_p(1), 'I {player} se prosazuje!'),
-        (nth_player_goals_fulfill_p(1), 'I {player} se přidává ke střelcům tohoto klání!'),
+        (nth_match_goals_fulfill_p(1), '{player} je úvodním střelcem svého týmu!'),
 
         (near_half_end_p, '{player} střílí gól do šatny!'),
         (near_half_end_p, '{player} se těsně před koncem poločasu prosazuje!'),
         (near_half_end_p, 'Gól před sirénou pro {player}!'),
+
 
         (nth_match_goals_fulfill_p(10), '{player} završuje první desítku gólů svého týmu!'),
         (nth_match_goals_fulfill_p(10), '{player} poprvé otevírá dvouciferné skore svého týmu!'),
@@ -129,11 +133,15 @@ class MatchEventMessageGenerator(object):
         (nth_match_goals_fulfill_p(30), '{player} se prosazuje třicátou brankou týmu {team}!'),
         (nth_match_goals_fulfill_p(30), '{player} završuje třetí desítku gólů pro tým {team}!'),
 
+        (nth_player_goals_fulfill_p(1), 'I {player} se prosazuje!'),
+        (nth_player_goals_fulfill_p(1), 'I {player} se přidává ke střelcům tohoto klání!'),
         (nth_player_goals_fulfill_p(5), '{player} předvádí své dovednosti pátou brankou!'),
         (nth_player_goals_fulfill_p(5), 'Pátá branka v tomto utkání pro {player}!'),
         (nth_player_goals_fulfill_p(8), 'Střeleckou slinu našel {player}!'),
+        (nth_player_goals_fulfill_p(8), '{player} dnes pálí!'),
         (nth_player_goals_fulfill_p(10), 'Desátou brankou prokazuje {player} střeleckou formu!'),
         (nth_player_goals_fulfill_p(10), 'Střelec utkání {player} se prosazuje podesáté!'),
+        (nth_player_goals_fulfill_p(15), 'Výbornou formu má dnes {player}!'),
 
         (match_score_p, 'Střela a {player} vyrovnává stav utkání!'),
         (match_score_p, '{player} srovnává stav tohoto utkání!'),
@@ -162,12 +170,13 @@ class MatchEventMessageGenerator(object):
         (is_lose_threshold_difference_p, '{player} snižuje golový deficit týmu {team}!'),
         (is_lose_threshold_difference_p, '{player} se snaží brankou zabránit debakl týmu {team}!'),
 
-        (without_player, 'Další branka na účet tohoto utkání.'),
+        (without_player_not_first, 'Další branka na účet tohoto utkání.'),
+        (without_player_not_first, 'Ukazatel skóre se opět mění.'),
+        (without_player_not_first, 'Míč je opět v bráně.'),
         (without_player, 'Máme tu změnu skóre.'),
-        (without_player, 'Ukazatel skóre se opět mění.'),
         (without_player, 'Tým {team} se prosazuje.'),
         (without_player, 'Změna stavu utkání.'),
-        (without_player, 'Míč je opět v bráně.'),
+        (without_player, 'Míč skončil v bráně.'),
         (without_player, 'Tým {team} se prosazuje.'),
     )  # type: Tuple[Tuple[Rule, str]]
 

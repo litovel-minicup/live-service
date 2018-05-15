@@ -7,8 +7,8 @@ from tornado import autoreload
 from tornado.ioloop import IOLoop
 from tornado.options import parse_command_line, options, define
 
-from minicup_livestream.handlers.api import CategoryListHandler, MatchListHandler, MatchHandler, MatchEventsHandler
-from minicup_livestream.handlers.login import LoginHandler, LogoutHandler
+from minicup_live_service.handlers.api import CategoryListHandler, MatchListHandler, MatchHandler, MatchEventsHandler
+from minicup_live_service.handlers.login import LoginHandler, LogoutHandler
 from .handlers import LivestreamHandler, MainHandler
 
 

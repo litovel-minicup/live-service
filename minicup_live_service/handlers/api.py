@@ -2,7 +2,7 @@
 from django.shortcuts import get_object_or_404
 
 from minicup_model.core.models import Category, Match, TeamInfo
-from minicup_livestream.handlers.base import AuthenticatedBaseHandler
+from minicup_live_service.handlers.base import AuthenticatedBaseHandler
 
 
 class CategoryListHandler(AuthenticatedBaseHandler):

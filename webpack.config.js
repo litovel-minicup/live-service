@@ -2,9 +2,9 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-    entry: ['bootstrap-loader', './minicup_livestream/static/main.js'],
+    entry: ['bootstrap-loader', './minicup_live_service/static/main.js'],
     output: {
-        path: path.resolve(__dirname, 'minicup_livestream/static/build/'),
+        path: path.resolve(__dirname, 'minicup_live_service/static/build/'),
         publicPath: '/build/',
         filename: 'build.js'
     },

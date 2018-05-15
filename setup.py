@@ -30,7 +30,7 @@ def setup():
         ],
         entry_points={
             'console_scripts': [
-                'litovel-minicup-live-service=minicup_livestream.app:main',
+                'litovel-minicup-live-service=minicup_live_service.app:main',
             ],
         },
         include_package_data=True,

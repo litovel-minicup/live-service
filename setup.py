@@ -27,6 +27,8 @@ def setup():
         install_requires=[
             'tornado',
             'vokativ',
+            'gunicorn',
+            'raven',
         ],
         entry_points={
             'console_scripts': [

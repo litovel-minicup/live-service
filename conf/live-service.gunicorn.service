@@ -1,0 +1,23 @@
+[Unit]
+Description=Litovel MINICUP live service.
+After=network.target
+
+[Service]
+PIDFile=/var/www/html/live-service/pid
+Environment="DJANGO_SETTINGS_MODULE=settings"
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/html/live-service/
+ExecStart=/var/www/html/live-service/.venv/bin/gunicorn \
+            --pid /var/www/html/live-service/pid \
+            -k tornado \
+            --graceful-timeout 5 \
+            --access-logfile /var/www/html/live-service/log/g-access.log \
+            --error-logfile /var/www/html/live-service/log/g-error.log \
+            --bind unix:/var/www/html/live-service/live-service.sock \
+            minicup_live_service.app:app
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target

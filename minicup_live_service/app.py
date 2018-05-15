@@ -3,13 +3,18 @@ import os.path
 from os.path import dirname
 
 import tornado.web
+from django.conf import settings
+from raven.contrib.tornado import SentryMixin, AsyncSentryClient
 from tornado import autoreload
 from tornado.ioloop import IOLoop
 from tornado.options import parse_command_line, options, define
 
 from minicup_live_service.handlers.api import CategoryListHandler, MatchListHandler, MatchHandler, MatchEventsHandler
+from minicup_live_service.handlers.base import BaseHandler
 from minicup_live_service.handlers.login import LoginHandler, LogoutHandler
 from .handlers import LivestreamHandler, MainHandler
+
+BaseHandler.__bases__ = (SentryMixin,) + BaseHandler.__bases__
 
 
 class Application(tornado.web.Application):
@@ -31,14 +36,20 @@ class Application(tornado.web.Application):
 
     def __init__(self):
         settings_ = dict(
-            cookie_secret="__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__",
+            cookie_secret=settings.SECRET_KEY,
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
             static_path=os.path.join(os.path.dirname(__file__), "static"),
             xsrf_cookies=False,
             websocket_ping_interval=1,
-            debug=True,
+            debug=os.environ.get("TORNADO_DEBUG") == '1',
         )
         super().__init__(self.handlers, **settings_)
+
+
+app = Application()
+
+if settings.SENTRY_DSN:
+    app.sentry_client = AsyncSentryClient(settings.SENTRY_DSN)
 
 
 def main():
@@ -47,7 +58,6 @@ def main():
     autoreload.start()
 
     parse_command_line()
-    app = Application()
     app.listen(options.port)
 
     IOLoop.current().start()

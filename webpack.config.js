@@ -1,5 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+
 
 module.exports = {
     entry: ['bootstrap-loader', './minicup_live_service/static/main.js'],
@@ -97,15 +99,15 @@ if (process.env.NODE_ENV === 'production') {
                 NODE_ENV: '"production"'
             }
         }),
-        new webpack.optimize.UglifyJsPlugin({
+        new UglifyJSPlugin({
             sourceMap: true,
-            minimize: true,
+            /* minimize: true,
             compress: {
                 warnings: false
             },
             output: {
                 comments: false
-            }
+            }*/
         }),
     ])
 }

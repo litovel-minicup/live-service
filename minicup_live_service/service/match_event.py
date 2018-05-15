@@ -145,11 +145,14 @@ class MatchEventMessageGenerator(object):
 
         (match_score_p, 'Střela a {player} vyrovnává stav utkání!'),
         (match_score_p, '{player} srovnává stav tohoto utkání!'),
+        (match_score, 'Máme tu shodu skóre!'),
+        (match_score, 'Tým {team} srovnává stav zápasu!'),
 
         (is_lose_decrease_goal_p, '{player} snížil stav utkání!'),
         (is_lose_decrease_goal_p, '{player} snižuje gólový deficit svého týmu!'),
         (is_win_increase_goal_p, '{player} navyšuje stav utkání!'),
         (is_win_increase_goal_p, '{player} navyšuje vedení týmu {team}!'),
+        (is_win_increase_goal_p, '{player} vylepšuje stav utkání pro tým {team}!'),
         (lots_of_goals, 'K této kanonádě se přidává i {player}!'),
         (lots_of_goals, 'Další branku tohoto utkání bohatého na góly přidává i {player}!'),
 
@@ -161,6 +164,11 @@ class MatchEventMessageGenerator(object):
         (anywhere_p, '{player} se prosadil!'),
         (anywhere_p, '{player} skóroval!'),
         (anywhere_p, '{player} se přesvědčivě prosazuje!'),
+
+        (anywhere, 'Tým {team} se prosadil.'),
+        (anywhere, 'Branka na účet týmu {team}.'),
+        (anywhere, 'Brankář týmu {opposite_team} překonán.'),
+        (anywhere, 'Tým {opposite_team} obdržel branku.'),
 
         (is_win_threshold_difference_p, '{player} potvrzuje vedení týmu {team}!'),
         (is_win_threshold_difference_p, '{player} potvrzuje vysokou převahu týmu {team}!'),

@@ -1,5 +1,8 @@
 
-deploy: deploy-model deploy-live-service
+deploy:
+	deploy-model
+	deploy-live-service
+	make restart
 
 .ONESHELL:
 deploy-live-service: minicup_live_service/
@@ -14,7 +17,6 @@ deploy-live-service: minicup_live_service/
 	ssh minicup systemctl daemon-reload;
 
 	scp conf/live-service.conf minicup:/etc/nginx/sites-available/
-	make restart
 
 .ONESHELL:
 deploy-model: ../litovel-minicup-django-administration/

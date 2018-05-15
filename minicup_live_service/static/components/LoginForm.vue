@@ -5,6 +5,7 @@
                 <form class="form" @submit.prevent="send">
                     <label>
                         <input type="password" ref="pin" v-model="pin" autofocus class="form-control">
+                        <br>
                         <input type="submit" class="form-control" value="Login">
                     </label>
                 </form>

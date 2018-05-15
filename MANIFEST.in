@@ -1,0 +1,4 @@
+
+
+include minicup_livestream/static/build/build.js
+graft minicup_livestream/templates

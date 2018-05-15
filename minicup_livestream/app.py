@@ -3,6 +3,9 @@ import os.path
 from os.path import dirname
 
 import tornado.web
+from tornado import autoreload
+from tornado.ioloop import IOLoop
+from tornado.options import parse_command_line, options, define
 
 from minicup_livestream.handlers.api import CategoryListHandler, MatchListHandler, MatchHandler, MatchEventsHandler
 from minicup_livestream.handlers.login import LoginHandler, LogoutHandler
@@ -36,3 +39,15 @@ class Application(tornado.web.Application):
             debug=True,
         )
         super().__init__(self.handlers, **settings_)
+
+
+def main():
+    define("port", default=8888, help="run on the given port", type=int)
+
+    autoreload.start()
+
+    parse_command_line()
+    app = Application()
+    app.listen(options.port)
+
+    IOLoop.current().start()

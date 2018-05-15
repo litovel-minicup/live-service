@@ -1,7 +1,7 @@
 # coding=utf-8
 from django.shortcuts import get_object_or_404
 
-from minicup_administration.core.models import Category, Match, TeamInfo
+from minicup_model.core.models import Category, Match, TeamInfo
 from minicup_livestream.handlers.base import AuthenticatedBaseHandler
 
 

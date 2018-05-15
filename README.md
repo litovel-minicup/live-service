@@ -1,2 +1,3 @@
-# livestream-service
-Python service for livestream events distribution between event producers and consumers
+# Litovel MINICUP - livestream service
+
+Tornado server used for distributing live results from matches - all database changes are performed via Django models of MINICUP defined in `litovel-minicup-django-administration` package.

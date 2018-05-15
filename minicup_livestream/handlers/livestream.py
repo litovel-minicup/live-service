@@ -11,7 +11,7 @@ from tornado.escape import json_decode
 from tornado.ioloop import IOLoop
 from tornado.websocket import WebSocketHandler
 
-from minicup_administration.core.models import Match, MatchEvent, Player, TeamInfo
+from minicup_model.core.models import Match, MatchEvent, Player, TeamInfo
 from ..service.match_event import MatchEventMessageGenerator
 
 logger = logging.getLogger(__name__)

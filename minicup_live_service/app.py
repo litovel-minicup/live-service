@@ -13,7 +13,7 @@ from tornado.options import parse_command_line, options, define
 from minicup_live_service.handlers.api import CategoryListHandler, MatchListHandler, MatchHandler, MatchEventsHandler
 from minicup_live_service.handlers.base import BaseHandler, ApplicationStartHandlerMixin
 from minicup_live_service.handlers.login import LoginHandler, LogoutHandler
-from .handlers import LivestreamHandler, MainHandler
+from .handlers import LiveStreamHandler, MainHandler
 
 BaseHandler.__bases__ = (SentryMixin,) + BaseHandler.__bases__
 
@@ -22,7 +22,7 @@ class Application(tornado.web.Application):
     handlers = [
         (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': os.path.join(dirname(__file__), 'static')}),
 
-        (r'/ws/broadcast', LivestreamHandler),
+        (r'/ws/broadcast', LiveStreamHandler),
 
         (r'/api/category-list', CategoryListHandler),
         (r'/api/category/(\d+)', MatchListHandler),

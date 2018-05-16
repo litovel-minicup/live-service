@@ -15,14 +15,14 @@
                 <code class="display-4 text-center d-block" v-if="isRunning">
                     {{ timeFormatted }}
                 </code>
-                <div class="display-4 pb-1" v-if="!isRunning && state !== 'end'">
+                <div class="display-4 pb-1" v-if="!isRunning && matchState !== 'end'">
                     <b-btn variant="success" @click="start()">START</b-btn>
                 </div>
             </transition>
         </div>
         <div class="row justify-content-center">
             <div class="col text-center display-5">
-                {{ state | onlineStateName }}
+                {{ matchState | onlineStateName }}
             </div>
         </div>
         <div class="row no-gutters mt-2 d-flex align-items-center justify-content-center">
@@ -48,13 +48,14 @@
 </template>
 
 <script>
+    import {mapState} from 'vuex';
+
     export default {
         name: "match-header",
         props: ['match', 'running'],
         data() {
             return {
                 timerCount: 0,
-                enableTimer: false,
                 timeoutID: -1
             }
         },
@@ -70,21 +71,20 @@
             }
         },
         computed: {
+            ...mapState({
+                matchState: (state) => state.match.state
+            }),
             timeFormatted() {
                 return Math.floor(this.timerCount / 60).pad(2) + ':' + (this.timerCount % 60).pad(2);
             },
-            state() {
-                return this.$store.state.match.state;
-            },
             isRunning() {
-                return this.state === 'half_first' || this.state === 'half_second'
+                return this.matchState === 'half_first' || this.matchState === 'half_second'
             }
         },
         beforeMount() {
             this.$store.commit('connectFsmEvent', {
                 event: '@start',
                 cb: (evt, fsm) => {
-                    this.enableTimer = true;
                     this.$emit('startTimer');
                 },
             });
@@ -92,12 +92,10 @@
             this.$store.commit('connectFsmEvent', {
                 event: '(pause end)',
                 cb: (evt, fsm) => {
-                    this.enableTimer = false;
                     this.$emit('stopTimer');
                 },
             });
 
-            console.log("Match: ", this.match);
             const timeoutCb = () => {
                 clearInterval(this.timeoutID);
                 this.timeoutID = setTimeout(timeoutCb, 1000);
@@ -127,6 +125,6 @@
 <style scoped lang="scss">
     .team-name {
         font-size: 2em;
-        border-bottom: .2em solid;
+        border-bottom: .15em solid #555 !important;
     }
 </style>

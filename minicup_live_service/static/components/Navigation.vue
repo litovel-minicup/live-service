@@ -1,5 +1,5 @@
 <template>
-    <b-navbar toggleable="md" variant="light">
+    <b-navbar toggleable="md">
         <b-container>
             <b-navbar-toggle target="navbar"/>
             <b-navbar-brand href='#' @click="$router.push({name: 'home'})">MC18 živé přenosy {{ $store.state.match.category_name }}</b-navbar-brand>
@@ -57,6 +57,11 @@
     }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+    .navbar {
+        background-color: #4180ff;
+        .nav-link, .navbar-brand {
+            color: white;
+        }
+    }
 </style>

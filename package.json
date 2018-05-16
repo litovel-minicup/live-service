@@ -36,6 +36,7 @@
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-2": "^6.24.1",
@@ -51,12 +52,12 @@
     "resolve-url-loader": "^2.3.0",
     "sass-loader": "^6.0.7",
     "style-loader": "^0.20.3",
+    "uglifyjs-webpack-plugin": "^1.0.0-beta.3",
     "url-loader": "^1.0.1",
     "vue-loader": "^13.0.5",
     "vue-particles": "^1.0.9",
     "vue-template-compiler": "^2.4.4",
     "webpack": "^3.6.0",
-    "webpack-dev-server": "^2.9.1",
-    "uglifyjs-webpack-plugin": "^1.0.0-beta.3"
+    "webpack-dev-server": "^2.9.1"
   }
 }

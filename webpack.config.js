@@ -7,7 +7,7 @@ module.exports = {
     entry: ['bootstrap-loader', './minicup_live_service/static/main.js'],
     output: {
         path: path.resolve(__dirname, 'minicup_live_service/static/build/'),
-        publicPath: '/build/',
+        publicPath: '/static/build/',
         filename: 'build.js'
     },
     module: {

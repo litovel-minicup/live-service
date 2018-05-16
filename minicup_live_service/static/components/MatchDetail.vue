@@ -56,22 +56,27 @@
                 'events'
             ]),
         },
-        watch: {
-            '$route'(to, from) {
-                console.log(to, from, 'trololo')
-
-            }
-        },
         methods: {
             goal({player, team}) {
                 this.$store.dispatch('goal', {player, team});
+            },
+            loadMatch() {
+                this.$store.dispatch('openMatch', {match: this.$route.params.match});
             }
         },
-        beforeMount() {
-            // TODO: refactor this.$store.state.route.params.match
-            console.log('STATE: ', this.$store.state, this.match);
-            this.$store.dispatch('openMatch', {match: this.$store.state.route.params.match});
-
+        created() {
+            this.loadMatch();
+            // plan refresh after connection lost
+            this.$store.watch(
+                (state) => {
+                    return state.socket.isConnected;
+                },
+                (old, new_) => {
+                    // plan match refresh && subscribe
+                    !new_ && this.loadMatch();
+                }
+            );
+            // connect state change of match
             this.$store.commit('connectFsmEvent', {
                 event: 'change',
                 cb: (ev, fsm) => {
@@ -82,7 +87,7 @@
                     });
                 }
             });
-        },
+        }
     }
 </script>
 

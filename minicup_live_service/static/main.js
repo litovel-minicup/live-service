@@ -28,7 +28,7 @@ function createWebSocket(path) {
 }
 
 
-Vue.use(VueNativeSock, createWebSocket('/ws/broadcast'), {
+Vue.use(VueNativeSock, createWebSocket('/ws/live'), {
     reconnection: true,
     format: 'json',
     store

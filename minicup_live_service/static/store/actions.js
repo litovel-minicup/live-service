@@ -17,12 +17,15 @@ export default {
             // TODO: error
         });
     },
-    openMatch({dispatch}, data) {
-        dispatch('loadMatch', data);
-        dispatch('loadEvents', data);
+    openMatch({dispatch}, {match}) {
+        dispatch('loadMatch', {match});
+        dispatch('loadEvents', {match});
+        dispatch('subscribeMatch', {match});
+    },
+    subscribeMatch({dispatch}, {match}) {
         dispatch('sendObj', {
                 action: 'subscribe',
-                ...data
+                match
             }
         );
     },
@@ -43,7 +46,6 @@ export default {
     },
     login({commit}, {pin}) {
         return Vue.http.post('/api/login', {pin}).then(response => {
-            console.log(response.body);
             commit('setLoggedIn', !!response.body.success);
         }, response => {
             console.error('Login failed.')
@@ -77,10 +79,8 @@ export default {
             match: state.match.id,
             event: event.id,
         });
-        console.log(event);
     },
     sendObj({state, commit}, obj) {
-        console.log('Socket message', obj);
         if (state.socket.isConnected) {
             this.$socket.sendObj(obj)
         } else {

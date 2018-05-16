@@ -22,7 +22,7 @@ class Application(tornado.web.Application):
     handlers = [
         (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': os.path.join(dirname(__file__), 'static')}),
 
-        (r'/ws/broadcast', LiveStreamHandler),
+        (r'/ws/live', LiveStreamHandler),
 
         (r'/api/category-list', CategoryListHandler),
         (r'/api/category/(\d+)', MatchListHandler),

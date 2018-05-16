@@ -39,18 +39,6 @@
             },
             ...mapState(['loggedIn'])
         },
-        beforeMount() {
-            // this.$toastr.defaultPosition = "toast-bottom-center";
-            // this.$toastr.s("ERRROR MESSAGE");
-
-            window.addEventListener('keydown', (e) => {
-                this.$emit('keydown', e);
-                console.log('emit');
-            });
-        },
-        created() {
-
-        }
     }
 </script>
 

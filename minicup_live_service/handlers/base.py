@@ -2,9 +2,15 @@
 import json
 from typing import Optional
 
-from tornado.web import RequestHandler
+from tornado.web import RequestHandler, Application
 
 from .utils import login_required
+
+
+class ApplicationStartHandlerMixin(object):
+    @classmethod
+    def on_application_start(cls, application: Application):
+        pass
 
 
 class BaseHandler(RequestHandler):

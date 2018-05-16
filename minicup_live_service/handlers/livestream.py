@@ -2,15 +2,19 @@
 import datetime
 import logging
 from collections import defaultdict
-from typing import DefaultDict, Set, Union
+from typing import DefaultDict, Set, Union, Type
+from urllib.parse import urlparse
 
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.utils.timezone import now
 from tornado.escape import json_decode
 from tornado.ioloop import IOLoop
+from tornado.web import Application
 from tornado.websocket import WebSocketHandler
 
+from minicup_live_service.handlers.base import ApplicationStartHandlerMixin
 from minicup_model.core.models import Match, MatchEvent, Player, TeamInfo
 from ..service.match_event import MatchEventMessageGenerator
 
@@ -30,27 +34,24 @@ def check_user(fc):
     return _
 
 
-class LivestreamHandler(WebSocketHandler):
+class LivestreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
+    # enable compression
+    get_compression_options = lambda self: {}
+
     subscribers = defaultdict(set)  # type: DefaultDict[int, Set[WebSocketHandler]]
 
     match_event_message_generator = MatchEventMessageGenerator()
 
     def check_origin(self, origin):
-        # TODO: check by livestream service URL
-        return True or super().check_origin(origin=origin)
-
-    def __init__(self, application, request, **kwargs):
-        super().__init__(application, request, **kwargs)
-
-    def get_compression_options(self):
-        # Non-None enables compression with default options.
-        return {}
+        loc = urlparse(origin).netloc  # type: str
+        return loc in settings.WS_ALLOWED_ORIGINS or loc.startswith('localhost') or loc.startswith('127.')
 
     def on_pong(self, data):
         pass
 
     def open(self, *args, **kwargs):
         logger.debug('OPEN: {}'.format(self))
+        self.set_nodelay(True)
         if self.get_secure_cookie('user'):
             self.write_message(dict(
                 logged=True
@@ -168,27 +169,35 @@ class LivestreamHandler(WebSocketHandler):
 
         if state == Match.STATE_HALF_FIRST:
             match.first_half_start = now()
-            IOLoop.current().call_later(Match.HALF_LENGTH.total_seconds(), self._half_end_callback(match_=match))
+            IOLoop.current().call_later(Match.HALF_LENGTH.total_seconds(), self._on_timer_end(match=match))
 
         elif state == Match.STATE_HALF_SECOND:
             match.second_half_start = now()
-            IOLoop.current().call_later(Match.HALF_LENGTH.total_seconds(), self._half_end_callback(match_=match))
+            IOLoop.current().call_later(Match.HALF_LENGTH.total_seconds(), self._on_timer_end(match=match))
 
         match.save(update_fields=('first_half_start', 'second_half_start',))
 
         data = dict(match=match.serialize(), event=event.serialize() if event else None)
         self.notify(match, {k: v for k, v in data.items() if v})
 
-    def _half_end_callback(self, match_: Match):
-        def cb(handler: LivestreamHandler = self, match: Match = match_):
-            match.refresh_from_db()
+    @classmethod
+    def on_application_start(cls, _: Application):
+        """
+        For all matches with required timer end plans callbacks to end half.
+        """
+        io_loop = IOLoop.current()
+        for match in Match.objects.find_matches_with_required_timer():  # type: Match
+            timer_end = ((match.second_half_start or match.first_half_start) + Match.HALF_LENGTH).timestamp()
+            logging.info('MATCH {}: Planning timer end in {}.'.format(match.id, timer_end - io_loop.time()))
+            io_loop.call_at(
+                timer_end,
+                cls._on_timer_end(match=match)
+            )
 
-            event = None
-            if match.online_state == Match.STATE_HALF_FIRST:
-                event = match.change_state(Match.STATE_HALF_PAUSE)
-            elif match.online_state == Match.STATE_HALF_SECOND:
-                event = match.change_state(Match.STATE_END)
-
+    @classmethod
+    def _on_timer_end(cls, match: Match):
+        def cb(handler: Type[LivestreamHandler] = cls):
+            event = match.on_timer_end()
             data = dict(match=match.serialize(), event=event.serialize() if event else None)
             handler.notify(match, {k: v for k, v in data.items() if v})
 

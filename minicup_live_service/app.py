@@ -1,5 +1,6 @@
 # coding=utf-8
 import os.path
+from datetime import timedelta
 from os.path import dirname
 
 import tornado.web
@@ -10,7 +11,7 @@ from tornado.ioloop import IOLoop
 from tornado.options import parse_command_line, options, define
 
 from minicup_live_service.handlers.api import CategoryListHandler, MatchListHandler, MatchHandler, MatchEventsHandler
-from minicup_live_service.handlers.base import BaseHandler
+from minicup_live_service.handlers.base import BaseHandler, ApplicationStartHandlerMixin
 from minicup_live_service.handlers.login import LoginHandler, LogoutHandler
 from .handlers import LivestreamHandler, MainHandler
 
@@ -44,6 +45,13 @@ class Application(tornado.web.Application):
             debug=os.environ.get("TORNADO_DEBUG") == '1',
         )
         super().__init__(self.handlers, **settings_)
+
+    def listen(self, *args, **kwargs):
+        for rule in self.wildcard_router.rules:
+            if issubclass(rule.target, ApplicationStartHandlerMixin):
+                rule.target.on_application_start(self)
+
+        super(Application, self).listen(*args, **kwargs)
 
 
 app = Application()

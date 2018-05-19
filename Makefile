@@ -1,13 +1,13 @@
 
 deploy:
-	deploy-model
-	deploy-live-service
+	make deploy-model
+	make deploy-live-service
 	make restart
 
 .ONESHELL:
 deploy-live-service: minicup_live_service/
 	test -d dist || rm -rf dist/*
-	# npm run build
+	npm run build
 	.venv/bin/python setup.py sdist
 	ssh minicup mkdir -p /tmp/deploy/
 	scp dist/* minicup:/tmp/deploy/
@@ -17,6 +17,7 @@ deploy-live-service: minicup_live_service/
 	ssh minicup systemctl daemon-reload;
 
 	scp conf/live-service.conf minicup:/etc/nginx/sites-available/
+	ssh minicup chown www-data:www-data -R /var/www/html/live-service/log/
 
 .ONESHELL:
 deploy-model: ../litovel-minicup-django-administration/
@@ -29,5 +30,5 @@ deploy-model: ../litovel-minicup-django-administration/
 
 
 restart:
-	ssh minicup systemctl reload live-service.gunicorn.service;
+	ssh minicup systemctl restart live-service.gunicorn.service;
 	ssh minicup service nginx restart;

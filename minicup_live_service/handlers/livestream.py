@@ -121,7 +121,10 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
 
     def check_origin(self, origin):
         loc = urlparse(origin).netloc  # type: str
-        return loc in settings.WS_ALLOWED_ORIGINS or loc.startswith('localhost') or loc.startswith('127.')
+        is_ok = loc in settings.WS_ALLOWED_ORIGINS or loc.startswith('localhost') or loc.startswith('127.')
+        if not is_ok:
+            logger.info('Location {} is not OK.'.format(loc))
+        return is_ok
 
     @classmethod
     def on_application_start(cls, _: Application):

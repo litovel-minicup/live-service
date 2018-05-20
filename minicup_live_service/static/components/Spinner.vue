@@ -1,5 +1,5 @@
 <template>
-    <div class="spinner">
+    <div :class="['spinner', invert ? 'invert' : '']">
         <div class="cube" v-if="enable">
             <div class="cube__item--1 cube__item"></div>
             <div class="cube__item--2 cube__item"></div>
@@ -23,18 +23,42 @@
                 type: Boolean,
                 default: false,
                 required: false,
-            }
+            },
+            invert: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
+
         },
     }
 </script>
 
 <style scoped lang="scss">
-    $color: #4180ff;
+    $color: white;
+    $secondary: #4180ff;
+
+    .spinner.invert {
+        .cube .cube__item:before {
+            background-color: $secondary;
+        }
+        .check__wrapper .check__circle {
+            stroke: $secondary;
+        }
+        .check__wrapper .check {
+            stroke: $color;
+            box-shadow: inset 0 0 0 $secondary;
+
+            animation: fill-invert .4s ease-in-out .4s forwards,
+            scale .3s ease-in-out .9s forwards,
+            fade 1s ease-in-out 1s forwards;
+        }
+    }
 
     .cube {
         margin: 20px auto;
-        width: 40px;
-        height: 40px;
+        width: 35px;
+        height: 35px;
         position: relative;
         transform: rotateZ(45deg);
 
@@ -115,7 +139,7 @@
             border-radius: 50%;
             display: block;
             stroke-width: 2;
-            stroke: #fff;
+            stroke: $secondary;
             stroke-miterlimit: 10;
             margin: 10% auto;
             box-shadow: inset 0 0 0 $color;
@@ -149,6 +173,12 @@
         @keyframes fill {
             100% {
                 box-shadow: inset 0 0 0 30px $color;
+            }
+        }
+
+        @keyframes fill-invert {
+            100% {
+                box-shadow: inset 0 0 0 30px $secondary;
             }
         }
 

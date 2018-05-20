@@ -1,21 +1,25 @@
 <template>
     <div>
-        <div v-if="loggedIn">
-            <navigation/>
-            <router-view/>
-        </div>
-        <div v-else>
-            <b-container>
-                <div style="height: 100vh;" class="row justify-content-center align-items-center">
-                    <div class="col col-lg-5">
-                        <login-form/>
+        <transition-group name="fade">
+            <div v-if="loggedIn" key="isNotLoggedIn">
+                <navigation key="navigation"/>
+                <transition name="fade" mode="out-in">
+                    <router-view key="router"/>
+                </transition>
+            </div>
+            <div v-else key="isLoggedIn">
+                <b-container>
+                    <div style="height: 100vh;" class="row justify-content-center align-items-center">
+                        <div class="col col-lg-5">
+                            <login-form/>
+                        </div>
                     </div>
-                </div>
-            </b-container>
-        </div>
+                </b-container>
+            </div>
+        </transition-group>
 
         <div class="spinner">
-            <spinner :enable="hasConnectionProblem"/>
+            <spinner :enable="hasConnectionProblem" :invert="!loggedIn"/>
         </div>
     </div>
 </template>
@@ -78,6 +82,19 @@
         overflow-y: scroll !important;
     }
 
+    .fade-enter-active, .fade-leave-active {
+        transition-property: opacity;
+        transition-duration: .2s;
+    }
+
+    .fade-enter-active {
+        transition-delay: .2s;
+    }
+
+    .fade-enter, .fade-leave-active {
+        opacity: 0
+    }
+
     .slide-top-enter-active {
         animation: bounce-in .5s;
     }
@@ -92,10 +109,6 @@
 
     .scale-out-leave-active {
         animation: scale-out 300ms reverse;
-    }
-
-    .fade-enter-active, .fade-leave-active {
-        transition: opacity .5s;
     }
 
     @keyframes bounce-in {

@@ -19,9 +19,9 @@
 
     export default {
         name: "category-list",
-        computed: mapState({
-            categories: 'categories',
-        }),
+        computed: mapState([
+            'categories'
+        ]),
         methods: {
             setCategory(id) {
                 this.$router.push({name: 'category', params: {category: id}});

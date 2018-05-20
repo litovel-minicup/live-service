@@ -1,15 +1,16 @@
 # coding=utf-8
-
+from minicup_model.core.models import User
 from .base import BaseHandler
 
 
 class LoginHandler(BaseHandler):
     COOKIE_USER = 'user'
+    MIN_PIN_LENGTH = 4
 
     def post(self):
-        pin = self.arguments_json.get('pin')
+        pin = self.arguments_json.get('pin') or ''
 
-        if not pin or pin not in ('1234',):
+        if len(pin) < self.MIN_PIN_LENGTH or not User.objects.filter(pin=pin).exists():
             self.write(dict(
                 success=False
             ))

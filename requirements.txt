@@ -3,4 +3,4 @@ tornado==5.0
 Django
 mysqlclient
 vokativ
-django-extentions
+django-extensions

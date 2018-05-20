@@ -15,7 +15,8 @@ from minicup_live_service.handlers.base import BaseHandler, ApplicationStartHand
 from minicup_live_service.handlers.login import LoginHandler, LogoutHandler
 from .handlers import LiveStreamHandler, MainHandler
 
-BaseHandler.__bases__ = (SentryMixin,) + BaseHandler.__bases__
+if settings.SENTRY_DSN:
+    BaseHandler.__bases__ = (SentryMixin,) + BaseHandler.__bases__
 
 
 class Application(tornado.web.Application):

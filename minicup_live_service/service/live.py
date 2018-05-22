@@ -84,7 +84,7 @@ class LiveService(object):
         io_loop = IOLoop.current()
         for match in Match.objects.find_matches_with_required_timer():  # type: Match
             timer_end = ((match.second_half_start or match.first_half_start) + Match.HALF_LENGTH).timestamp()
-            logging.info('MATCH {}: Planning timer end in {}.'.format(match.id, timer_end - io_loop.time()))
+            logging.info('MATCH {}: Planning timer end in {}.'.format(match.pk, timer_end - io_loop.time()))
             io_loop.call_at(
                 timer_end,
                 self._on_timer_end(notify_callback=notify_callback, match=match)

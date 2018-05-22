@@ -38,7 +38,7 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
 
     live_service = LiveService()
 
-    subscribers = defaultdict(set)  # type: DefaultDict[int, Set[WebSocketHandler]]
+    matches_subscribers = defaultdict(set)  # type: DefaultDict[Match, Set[WebSocketHandler]]
 
     def open(self, *args, **kwargs):
         logger.debug('OPEN: {}'.format(self))
@@ -157,25 +157,25 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
     @classmethod
     def notify(cls, match: Match, message: Union[dict, str]):
         logger.info('NOTIFY: {} subs, {}: {}'.format(
-            len(cls.subscribers[match.id]),
+            len(cls.matches_subscribers[match]),
             message.get('match', {}).get('id') or message.get('event', {}).get('id'),
             str(message)[:50]
         ))
-        for sub in cls.subscribers[match.id]:  # type: WebSocketHandler
+        for sub in cls.matches_subscribers[match]:  # type: WebSocketHandler
             sub.write_message(message)
 
     @classmethod
     def unsubscribe(cls, subscriber: WebSocketHandler, match: Match = None):
-        if match and subscriber in cls.subscribers[match]:
-            cls.subscribers[match.id].remove(subscriber)
+        if match and subscriber in cls.matches_subscribers[match]:
+            cls.matches_subscribers[match].remove(subscriber)
             return
-        for m in cls.subscribers.values():
+        for m in cls.matches_subscribers.values():
             if subscriber in m:
                 m.remove(subscriber)
 
     @classmethod
     def subscribe(cls, match: Match, subscriber: WebSocketHandler):
-        cls.subscribers[match.id].add(subscriber)
+        cls.matches_subscribers[match].add(subscriber)
 
     def __str__(self):
         return '{}({})'.format(

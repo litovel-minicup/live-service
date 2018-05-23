@@ -1,6 +1,6 @@
 # coding=utf-8
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.utils.timezone import now
 from tornado.ioloop import IOLoop
@@ -110,8 +110,8 @@ class LiveService(object):
         else:
             match.score_home, match.score_away = 0, 0
 
-        # TODO: old events cannot be deleted
-        if match.confirmed:
+        # TODO: move threshold to constant and with frontend propagation
+        if match.confirmed or datetime.now() > event.absolute_time + timedelta(seconds=60):
             raise EventDeleteError(match=match)
 
         event.delete()

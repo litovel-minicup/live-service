@@ -20,7 +20,7 @@
 
 <script>
     export default {
-        name: "events-list",
+        name: "match-events",
         props: ['match', 'events'],
         filters: {
             prettyTime(secs) {
@@ -30,16 +30,25 @@
             eventMessage(event) {
                 if (event.message) return event.message;
                 return `${{end: 'Konec', start: 'Začátek'}[event.type]} ${event.half_index + 1}. poločasu`;
+            },
+        },
+        data() {
+            return {
+                time: new Date(),
+                timerID: 0,
             }
         },
         methods: {
             canDelete(event) {
                 if (event.type !== 'goal') return false;
-                // TODO: restrict to time
-                const last = this.sorted[0];
-                return last.id === event.id;
+                // TODO: threshold to live service API
+                return this.time < (new Date(event.absolute_time * 1000 + 60 * 1000));
             },
             deleteEvent(event) {
+                if (!this.canDelete(event)) {
+                    this.$toastr.w('Cannot be deleted.');
+                    return;
+                }
                 this.$store.dispatch('deleteEvent', event);
             }
         },
@@ -47,6 +56,14 @@
             sorted() {
                 return _.reverse(_.sortBy(this.events, ['half_index'], ['time_offset']));
             }
+        },
+        created() {
+            this.timerID = setInterval(() => {
+                this.time = new Date();
+            }, 1000)
+        },
+        destroyed() {
+            clearInterval(this.timerID);
         }
     }
 </script>

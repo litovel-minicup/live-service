@@ -16,7 +16,7 @@ from tornado.websocket import WebSocketHandler
 from minicup_live_service.exceptions import EventDeleteError
 from minicup_live_service.handlers.base import ApplicationStartHandlerMixin
 from minicup_live_service.service.live import LiveService
-from minicup_model.core.models import Match, Category, MatchTerm
+from minicup_model.core.models import Match, Category, MatchTerm, TeamInfo
 
 logger = logging.getLogger(__name__)
 
@@ -141,6 +141,17 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
             event=event.serialize() if event else None
         )
         self.notify(match, {k: v for k, v in data.items() if v})
+
+    def _process_fetch_team_roster(self, data):
+        team = TeamInfo.objects.get(pk=data.get('team'))
+        self.write_message(dict(
+            players=[
+                p.serialize()
+                for p
+                in team.team_info_player.all()
+            ],
+            team=team.id
+        ))
 
     def check_origin(self, origin):
         loc = urlparse(origin).netloc  # type: str

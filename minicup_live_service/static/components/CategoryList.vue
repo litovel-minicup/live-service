@@ -14,20 +14,19 @@
 </template>
 
 <script>
-    import {mapState} from 'vuex'
+    import {mapActions, mapState} from 'vuex'
 
     export default {
         name: "category-list",
-        computed: mapState([
-            'categories'
-        ]),
+        computed: mapState(['categories']),
         methods: {
             setCategory(id) {
                 this.$router.push({name: 'category', params: {category: id}});
-            }
+            },
+            ...mapActions(['loadCategories'])
         },
         created() {
-            this.$store.dispatch('loadCategories');
+            this.loadCategories()
         }
     }
 </script>

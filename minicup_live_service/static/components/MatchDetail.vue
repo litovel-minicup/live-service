@@ -79,7 +79,8 @@
             );
             // connect state change of match
             // but only for first component.. not so clean solution, sorry
-            _.once(() => {
+            // TODO: it's buggy, cannot be solved like this
+            //_.once(() => {
                 this.$store.commit('connectFsmEvent', {
                     event: 'change',
                     cb: (ev, fsm) => {
@@ -90,7 +91,7 @@
                         });
                     }
                 });
-            });
+            //});
         }
     }
 </script>

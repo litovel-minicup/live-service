@@ -15,14 +15,14 @@
                 <code class="display-4 text-center d-block" v-if="isRunning">
                     {{ timeFormatted }}
                 </code>
-                <div class="display-4 pb-1" v-if="!isRunning && matchState !== 'end'">
-                    <b-btn variant="success" @click="start()">START</b-btn>
+                <div class="display-4 pb-1" v-if="!isRunning && match.state !== 'end'">
+                    <b-btn variant="success" @click="startHalf()">START</b-btn>
                 </div>
             </transition>
         </div>
         <div class="row justify-content-center">
             <div class="col text-center display-5">
-                {{ matchState | onlineStateName }}
+                {{ match.state | onlineStateName }}
             </div>
         </div>
         <div class="row no-gutters mt-2 d-flex align-items-center justify-content-center">
@@ -48,7 +48,8 @@
 </template>
 
 <script>
-    import {mapState} from 'vuex';
+    import {mapActions} from 'vuex';
+    import _ from 'lodash';
 
     export default {
         name: "match-header",
@@ -59,33 +60,26 @@
                 timeoutID: -1
             }
         },
-        methods: {
-            start() {
-                this.$store.dispatch('startHalf')
-            }
-        },
+        methods: mapActions(['startHalf', 'endHalf']),
         filters: {
             score(val) {
-                if (val === null) return '-';
-                return val;
+                return val === null ? '-' : val;
             }
         },
         computed: {
-            ...mapState({
-                matchState: (state) => state.match.state
-            }),
             timeFormatted() {
                 return Math.floor(this.timerCount / 60).pad(2) + ':' + (this.timerCount % 60).pad(2);
             },
             isRunning() {
-                return this.matchState === 'half_first' || this.matchState === 'half_second'
+                return _.includes(['half_first', 'half_second'], this.match.state)
             }
         },
-        beforeMount() {
+        created() {
             this.$store.commit('connectFsmEvent', {
                 event: '@start',
                 cb: (evt, fsm) => {
-                    this.timerCount = 0;
+                    // this.timerCount = 0;
+                    console.warn(evt);
                     this.$emit('startTimer');
                 },
             });
@@ -93,25 +87,26 @@
             this.$store.commit('connectFsmEvent', {
                 event: '(pause end)',
                 cb: (evt, fsm) => {
+                    console.warn(evt);
                     this.$emit('stopTimer');
                 },
             });
 
-            const timeoutCb = () => {
+            this.timeoutID = setInterval(() => {
                 const start = this.match.second_half_start ? this.match.second_half_start : this.match.first_half_start;
-                this.timerCount = (Number(Date.now() / 1000) - start) | 0;
+                this.timerCount = Math.floor(Number(Date.now() / 1000) - start);
 
                 if (
-                    this.timerCount > this.$store.state.match.half_length &&
-                    ['half_first', 'half_second'].indexOf(this.$store.state.fsm.state) >= 0
+                    start != null &&
+                    this.timerCount > this.match.half_length &&
+                    _.includes(['half_first', 'half_second'], this.$store.state.fsm.state)
                 ) {
-                    this.$store.dispatch('endHalf').then(() => {
+                    this.endHalf().then(() => {
                         this.timerCount = 0
                     });
                 }
 
-            };
-            this.timeoutID = setInterval(timeoutCb, 1000);
+            }, 1000);
         },
         beforeDestroy() {
             clearInterval(this.timeoutID);
@@ -124,6 +119,7 @@
         font-size: 2em;
         border-bottom: .15em solid #555 !important;
     }
+
     .dress-color {
         font-style: italic;
         font-size: .65em;

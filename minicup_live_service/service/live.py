@@ -111,7 +111,10 @@ class LiveService(object):
             match.score_home, match.score_away = 0, 0
 
         # TODO: move threshold to constant and with frontend propagation
-        if match.confirmed or datetime.now() > event.absolute_time + timedelta(seconds=60):
+        if match.confirmed or datetime.now() > event.absolute_time + timedelta(seconds=60) or event.match.match_match_event.filter(
+            half_index=event.half_index,
+            time_offset__gt=event.time_offset
+        ).exists():
             raise EventDeleteError(match=match)
 
         event.delete()

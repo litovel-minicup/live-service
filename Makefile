@@ -20,8 +20,8 @@ deploy-live-service: minicup_live_service/
 	ssh minicup chown www-data:www-data -R /var/www/html/live-service/log/
 
 .ONESHELL:
-deploy-model: ../litovel-minicup-django-administration/
-	cd ../litovel-minicup-django-administration/
+deploy-model:
+	cd ../model/
 	test -d dist || rm -rf dist/*
 	.venv/bin/python setup.py sdist
 	ssh minicup mkdir -p /tmp/deploy/

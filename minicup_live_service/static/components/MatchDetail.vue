@@ -37,6 +37,7 @@
     import MatchEvents from './MatchEvents'
     import PlayerSelector from './PlayerSelector'
     import {mapState} from 'vuex'
+    import _ from 'lodash'
 
     export default {
         name: "match-detail",
@@ -77,15 +78,18 @@
                 }
             );
             // connect state change of match
-            this.$store.commit('connectFsmEvent', {
-                event: 'change',
-                cb: (ev, fsm) => {
-                    this.$store.dispatch('sendObj', {
-                        action: 'state_change',
-                        state: fsm.state,
-                        match: this.$store.state.match.id
-                    });
-                }
+            // but only for first component.. not so clean solution, sorry
+            _.once(() => {
+                this.$store.commit('connectFsmEvent', {
+                    event: 'change',
+                    cb: (ev, fsm) => {
+                        this.$store.dispatch('sendObj', {
+                            action: 'state_change',
+                            state: fsm.state,
+                            match: this.$store.state.match.id
+                        });
+                    }
+                });
             });
         }
     }

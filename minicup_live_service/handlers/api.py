@@ -36,12 +36,7 @@ class MatchHandler(AuthenticatedBaseHandler):
 
         def players(team_info: TeamInfo):
             return [
-                dict(
-                    id=p.id,
-                    name=p.name,
-                    surname=p.surname,
-                    number=p.number
-                ) for p in team_info.team_info_player.all()
+                p.serialize() for p in team_info.team_info_player.all()
             ]
 
         self.write(match.serialize(

@@ -6,7 +6,6 @@
                     class="list-group-item list-group-item-action"
                     @click="setCategory(cat.id)"
                     v-for="cat in categories"
-                    href="#"
             >
                 {{ cat.name }}
             </a>

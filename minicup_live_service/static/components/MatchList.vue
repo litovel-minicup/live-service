@@ -25,7 +25,12 @@
         computed: mapState({
             matches: 'matches',
             nearestMatches(state) {
-                return _.slice(this.$store.state.matches, 0, this.count)
+                return _.slice(this.filtered, 0, this.count)
+            },
+            filtered(state) {
+                return _.filter(state.matches, (match) => {
+                    return match.state !== 'end';
+                })
             }
         }),
         data() {
@@ -38,7 +43,7 @@
                 this.$router.push({name: 'match', params: {match: id}});
             }
         },
-        beforeMount() {
+        created() {
             this.$store.dispatch('loadMatches', {category: this.$store.state.route.params.category});
         }
     }

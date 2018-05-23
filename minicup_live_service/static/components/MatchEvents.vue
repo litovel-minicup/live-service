@@ -8,7 +8,10 @@
             >
                 <span>
                     <b-badge>{{ event.half_index + 1}}/2 | {{ event.time_offset | prettyTime }}</b-badge>
-                    {{ event | eventMessage }} (<strong>{{ event.score[0] }}:{{ event.score[1] }}</strong>)
+                    {{ event | eventMessage }}
+                    <template v-if="event.type === 'goal'">
+                        (<strong>{{ event.score[0] }}:{{ event.score[1] }}</strong>)
+                    </template>
                 </span>
                 <button type="button" class="btn btn-danger" v-if="canDelete(event)" @click="deleteEvent(event)">
                     <span class="close">&times;</span>
@@ -29,7 +32,7 @@
             },
             eventMessage(event) {
                 if (event.message) return event.message;
-                return `${{end: 'Konec', start: 'Začátek'}[event.type]} ${event.half_index + 1}. poločasu`;
+                return `${{end: 'Konec', start: 'Začátek'}[event.type]} ${event.half_index + 1}. poločasu.`;
             },
         },
         data() {
@@ -42,7 +45,8 @@
             canDelete(event) {
                 if (event.type !== 'goal') return false;
                 // TODO: threshold to live service API
-                return this.time < (new Date(event.absolute_time * 1000 + 60 * 1000));
+                const last = this.sorted[0];
+                return this.time < (new Date(event.absolute_time * 1000 + 60 * 1000)) && last.id === event.id;
             },
             deleteEvent(event) {
                 if (!this.canDelete(event)) {

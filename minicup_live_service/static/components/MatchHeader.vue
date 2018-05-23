@@ -2,12 +2,12 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-6 text-right team-name" :title="match.home_team_name" :style="{ borderBottomColor: match.home_team_color }">
-                <small class="font-weight-light text-muted font-italic" v-if="match.home_team_color_name">({{ match.home_team_color_name }})</small>
                 {{ match.home_team_name }}
+                <small class="dress-color font-weight-light text-muted" v-if="match.home_team_color_name">({{ match.home_team_color_name }})</small>
             </div>
             <div class="col-6 team-name" :title="match.away_team_name" :style="{ borderBottomColor: match.away_team_color }">
                 {{ match.away_team_name }}
-                <small class="font-weight-light text-muted font-italic" v-if="match.away_team_color_name">({{ match.away_team_color_name }})</small>
+                <small class="dress-color font-weight-light text-muted" v-if="match.away_team_color_name">({{ match.away_team_color_name }})</small>
             </div>
         </div>
         <div class="row mt-2 justify-content-center">
@@ -85,6 +85,7 @@
             this.$store.commit('connectFsmEvent', {
                 event: '@start',
                 cb: (evt, fsm) => {
+                    this.timerCount = 0;
                     this.$emit('startTimer');
                 },
             });
@@ -97,10 +98,6 @@
             });
 
             const timeoutCb = () => {
-                clearInterval(this.timeoutID);
-                this.timeoutID = setTimeout(timeoutCb, 1000);
-                // if (!this.enableTimer) return;
-
                 const start = this.match.second_half_start ? this.match.second_half_start : this.match.first_half_start;
                 this.timerCount = (Number(Date.now() / 1000) - start) | 0;
 
@@ -114,7 +111,7 @@
                 }
 
             };
-            this.timeoutID = setTimeout(timeoutCb, 1000);
+            this.timeoutID = setInterval(timeoutCb, 1000);
         },
         beforeDestroy() {
             clearInterval(this.timeoutID);
@@ -126,5 +123,10 @@
     .team-name {
         font-size: 2em;
         border-bottom: .15em solid #555 !important;
+    }
+    .dress-color {
+        font-style: italic;
+        font-size: .65em;
+        display: block;
     }
 </style>

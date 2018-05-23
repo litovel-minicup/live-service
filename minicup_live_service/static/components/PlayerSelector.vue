@@ -14,7 +14,7 @@
                     </strong>
                     <strong class="mr-2">
                         {{ player.surname }}
-                    </strong> {{ player.name }}
+                    </strong> {{ player.lastname }}
                 </span>
 
                 <b-button @click="goal(player.id)" variant="success">⚽</b-button>

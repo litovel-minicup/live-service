@@ -2,9 +2,6 @@
     <div class="container">
         <match-header
                 :match="match"
-                :running.sync="running"
-                @startTimer="running = true"
-                @stopTimer="running = false"
                 @homeGoal="$refs.homeSelector.show()"
                 @awayGoal="$refs.awaySelector.show()"
         />
@@ -43,7 +40,7 @@
         name: "match-detail",
         data() {
             return {
-                running: false
+
             }
         },
         components: {

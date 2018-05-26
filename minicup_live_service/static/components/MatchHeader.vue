@@ -53,7 +53,7 @@
 
     export default {
         name: "match-header",
-        props: ['match', 'running'],
+        props: ['match'],
         data() {
             return {
                 timerCount: 0,
@@ -75,7 +75,7 @@
             }
         },
         created() {
-            this.$store.commit('connectFsmEvent', {
+            /* this.$store.commit('connectFsmEvent', {
                 event: '@start',
                 cb: (evt, fsm) => {
                     // this.timerCount = 0;
@@ -90,7 +90,7 @@
                     console.warn(evt);
                     this.$emit('stopTimer');
                 },
-            });
+            }); */
 
             this.timeoutID = setInterval(() => {
                 const start = this.match.second_half_start ? this.match.second_half_start : this.match.first_half_start;

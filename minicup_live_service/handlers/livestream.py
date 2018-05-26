@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import QuerySet
 from tornado.escape import json_decode
 from tornado.web import Application
 from tornado.websocket import WebSocketHandler
@@ -109,16 +109,16 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
         from_ = datetime.now()  # (year=2018, month=6, day=8, hour=16, minute=42)
         to = from_ + MatchTerm.STANDARD_LENGTH * 1
 
+        matches = category.match_category.annotate(match_start=Match.MATCH_START_ANNOTATION).exclude(
+            online_state=Match.STATE_END
+        ).order_by('match_start', 'match_term__location', 'id')  # type: QuerySet
         self.write_message(dict(
             matches={
                 match.id: match.serialize()
-                for match in category.match_category.annotate(match_start=Match.MATCH_START_ANNOTATION).filter(
-                Q(
-                    online_state__in=Match.MATCH_PLAYING_STATE
-                ) | Q(
-                    match_start__range=(from_, to),
-                )
-            ).distinct()
+                for match in matches[
+                             :
+                             4 + matches.filter(online_state__in=Match.MATCH_PLAYING_STATE).count()
+                             ]
             }
         ))
 

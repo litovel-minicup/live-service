@@ -24,11 +24,13 @@ def need_player(cb: Rule):
 
 
 def lots_of_goals(me: MatchEvent):
-    return sum(me.score) > 30
+    return sum(me.score) > 40
+
 
 lots_of_goals_p = need_player(lots_of_goals)
 
-def near_end(me, threshold=20):
+
+def near_end(me, threshold=15):
     return (Match.HALF_LENGTH.total_seconds() - me.time_offset) < threshold
 
 
@@ -96,7 +98,7 @@ is_win_increase_goal = is_difference_change_match_event(positive=True)
 is_win_increase_goal_p = need_player(is_win_increase_goal)
 
 
-def is_threshold_difference(threshold=5, positive=True):
+def is_threshold_difference(threshold=10, positive=True):
     def _(me: MatchEvent):
         scorer_index = me.match.teams.index(me.team_info)
         opposite_index = (1, 0)[scorer_index]
@@ -126,9 +128,8 @@ class MatchEventMessageGenerator(object):
         (near_half_end_p, '{player} se těsně před koncem poločasu prosazuje!'),
         (near_half_end_p, 'Gól před sirénou pro {player}!'),
 
-
         (nth_match_goals_fulfill_p(10), '{player} završuje první desítku gólů svého týmu!'),
-        (nth_match_goals_fulfill_p(10), '{player} poprvé otevírá dvouciferné skore svého týmu!'),
+        (nth_match_goals_fulfill_p(10), '{player} poprvé otevírá dvouciferné skóre svého týmu!'),
         (nth_match_goals_fulfill_p(20), '{player} střílí dvacátou branku pro tým {team}!'),
         (nth_match_goals_fulfill_p(20), '{player} završuje druhou desítku gólů svého týmu!'),
         (nth_match_goals_fulfill_p(30), '{player} se prosazuje třicátou brankou týmu {team}!'),
@@ -164,6 +165,7 @@ class MatchEventMessageGenerator(object):
         (anywhere_p, '{player} to tam poslal!'),
         (anywhere_p, '{player} se prosadil!'),
         (anywhere_p, '{player} skóroval!'),
+        (anywhere_p, '{player} se přesvědčivě prosazuje!'),
         (anywhere_p, '{player} se přesvědčivě prosazuje!'),
 
         (anywhere, 'Tým {team} se prosadil.'),

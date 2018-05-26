@@ -11,7 +11,7 @@ export default {
         state.category = id
     },
     setMatch(state, match) {
-        state.match = _.merge({}, state.match, match);
+        state.match = {...state.match, ...match};
         this.commit('doFsmAction', 'load_' + state.match.state);
     },
     setEvents(state, events) {
@@ -21,31 +21,34 @@ export default {
         state.events.unshift(event)
     },
 
-    doFsmAction(state, action) {
-        state.fsm.do(action);
-    },
-
-    goToFsmState(state, fsmState) {
-        state.fsm.go(fsmState, true); // force go
-    },
     startTimer(state) {
         this.commit('doFsmAction', 'start');
     },
+    stopTimer(state) {
+        this.commit('doFsmAction', 'timer');
+    },
+    doFsmAction(state, action) {
+        state.fsm.do(action);
+    },
+    goToFsmState(state, fsmState) {
+        state.fsm.go(fsmState, true); // force go
+    },
+
+
+    pushSocketQueue(state, obj) {
+        state.socket.queue.push(obj);
+    },
+
     connectFsmEvent(state, {event, cb}) {
         state.fsm.on(event, (...args) => {
             cb(...args)
         });
     },
-    stopTimer(state) {
-        state.fsm.do('timer');
-    },
-    pushSocketQueue(state, obj) {
-        state.socket.queue.push(obj);
-    },
+
     setLoggedIn(state, loggedIn) {
         state.loggedIn = loggedIn;
     },
-
+    // WS related mutations
     SOCKET_ONOPEN(state, event) {
         state.socket.isConnected = true;
         let obj;

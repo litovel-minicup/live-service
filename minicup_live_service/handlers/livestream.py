@@ -100,7 +100,10 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
 
     def _process_subscribe(self, data):
         match = Match.objects.get(pk=data.get('match'))
-        self.write_message(dict(match=match.serialize()))
+        self.write_message(dict(
+            match=match.serialize(),
+            type_content=[LiveService.MESSAGE_CONTENT_MATCH]
+        ))
 
     def _process_subscribe_category(self, data):
         category = Category.objects.get(pk=data.get('category'))
@@ -119,7 +122,8 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
                              :
                              4 + matches.filter(online_state__in=Match.MATCH_PLAYING_STATE).count()
                              ]
-            }
+            },
+            type_content=[LiveService.MESSAGE_CONTENT_MATCHES]
         ))
 
     @check_user
@@ -128,6 +132,7 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
         self.notify(match, dict(
             event=match_event.serialize(),
             match=match.serialize(),
+            type_content=[LiveService.MESSAGE_CONTENT_EVENT, LiveService.MESSAGE_CONTENT_MATCH]
         ))
 
     @check_user
@@ -138,7 +143,11 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
 
         data = dict(
             match=match.serialize(),
-            event=event.serialize() if event else None
+            event=event.serialize() if event else None,
+            type_content=list(filter(None, [
+                LiveService.MESSAGE_CONTENT_EVENT if event else None,
+                LiveService.MESSAGE_CONTENT_MATCH
+            ])),
         )
         self.notify(match, {k: v for k, v in data.items() if v})
 
@@ -150,7 +159,8 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
                 for p
                 in team.team_info_player.all()
             ],
-            team=team.id
+            team=team.id,
+            type_content=[LiveService.MESSAGE_CONTENT_TEAM_PLAYERS]
         ))
 
     def check_origin(self, origin):
@@ -174,6 +184,7 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
         except EventDeleteError as e:
             self.write_message(dict(
                 match=e.match.serialize(),
+                type_content=[LiveService.MESSAGE_CONTENT_MATCH],
                 success=False,
             ))
             return

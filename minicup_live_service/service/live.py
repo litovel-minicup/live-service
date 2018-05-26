@@ -13,6 +13,11 @@ logger = logging.getLogger(__name__)
 
 
 class LiveService(object):
+    MESSAGE_CONTENT_MATCH = 'match'
+    MESSAGE_CONTENT_MATCHES = 'matches'
+    MESSAGE_CONTENT_EVENT = 'event'
+    MESSAGE_CONTENT_TEAM_PLAYERS = 'team_players'
+
     match_event_message_generator = MatchEventMessageGenerator()
 
     def process_goal(self, data):
@@ -94,7 +99,14 @@ class LiveService(object):
     def _on_timer_end(notify_callback, match: Match):
         def cb():
             event = match.on_timer_end()
-            data = dict(match=match.serialize(), event=event.serialize() if event else None)
+            data = dict(
+                match=match.serialize(),
+                event=event.serialize() if event else None,
+                type_content=list(filter(None, (
+                    LiveService.MESSAGE_CONTENT_MATCH,
+                    LiveService.MESSAGE_CONTENT_EVENT if event else None
+                )))
+            )
             notify_callback(match, {k: v for k, v in data.items() if v})
 
         return cb

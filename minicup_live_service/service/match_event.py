@@ -26,6 +26,7 @@ def need_player(cb: Rule):
 def lots_of_goals(me: MatchEvent):
     return sum(me.score) > 30
 
+lots_of_goals_p = need_player(lots_of_goals)
 
 def near_end(me, threshold=20):
     return (Match.HALF_LENGTH.total_seconds() - me.time_offset) < threshold
@@ -153,8 +154,8 @@ class MatchEventMessageGenerator(object):
         (is_win_increase_goal_p, '{player} navyšuje stav utkání!'),
         (is_win_increase_goal_p, '{player} navyšuje vedení týmu {team}!'),
         (is_win_increase_goal_p, '{player} vylepšuje stav utkání pro tým {team}!'),
-        (lots_of_goals, 'K této kanonádě se přidává i {player}!'),
-        (lots_of_goals, 'Další branku tohoto utkání bohatého na góly přidává i {player}!'),
+        (lots_of_goals_p, 'K této kanonádě se přidává i {player}!'),
+        (lots_of_goals_p, 'Další branku tohoto utkání bohatého na góly přidává i {player}!'),
 
         (anywhere_p, '{player} se prosazuje!'),
         (anywhere_p, 'Branku vsítil {player}!'),

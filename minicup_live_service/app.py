@@ -3,12 +3,15 @@ import os.path
 from datetime import timedelta
 from os.path import dirname
 
-import tornado.web
 from django.conf import settings
+from django.core.handlers.wsgi import WSGIHandler
+from django.core.wsgi import get_wsgi_application
 from raven.contrib.tornado import SentryMixin, AsyncSentryClient
 from tornado import autoreload
 from tornado.ioloop import IOLoop
 from tornado.options import parse_command_line, options, define
+from tornado.web import Application, StaticFileHandler, FallbackHandler
+from tornado.wsgi import WSGIContainer
 
 from minicup_live_service.handlers.api import CategoryListHandler, MatchListHandler, MatchHandler, MatchEventsHandler
 from minicup_live_service.handlers.base import BaseHandler, ApplicationStartHandlerMixin
@@ -19,9 +22,12 @@ if settings.SENTRY_DSN:
     BaseHandler.__bases__ = (SentryMixin,) + BaseHandler.__bases__
 
 
-class Application(tornado.web.Application):
+wsgi_app = WSGIContainer(get_wsgi_application())
+
+
+class Application(Application):
     handlers = [
-        (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': os.path.join(dirname(__file__), 'static')}),
+        (r'/static/(.*)', StaticFileHandler, {'path': os.path.join(dirname(__file__), 'static')}),
 
         (r'/ws/live', LiveStreamHandler),
 
@@ -33,6 +39,7 @@ class Application(tornado.web.Application):
         (r'/api/login', LoginHandler),
         (r'/api/logout', LogoutHandler),
 
+        (r'/admin.*', FallbackHandler, dict(fallback=wsgi_app)),
         (r'/', MainHandler),
     ]
 

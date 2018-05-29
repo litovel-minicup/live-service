@@ -2,21 +2,21 @@
     <b-navbar toggleable="md">
         <b-container>
             <b-navbar-toggle target="navbar"/>
-            <b-navbar-brand href='#' @click="$router.push({name: 'home'})">MC18 živé přenosy {{ $store.state.match.category_name }}</b-navbar-brand>
+            <b-navbar-brand href='#' @click="$router.push({name: 'home'})">MC18 {{ $store.state.match.category_name }}</b-navbar-brand>
             <b-collapse is-nav id="navbar">
-                <!-- <b-navbar-nav>
-                    <b-nav-item href="#">Link</b-nav-item>
-                    <b-nav-item href="#" disabled>Disabled</b-nav-item>
-                </b-navbar-nav> -->
+                <b-navbar-nav>
+                    <b-nav-item href="#" @click="$router.push({name: 'home'})">Výběr kategorie</b-nav-item>
+                    <!-- <b-nav-item href="#" disabled>Disabled</b-nav-item> -->
+                </b-navbar-nav>
 
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto mr-4">
                     <b-nav-item @click="logout()">
                         Odhlásit se
                     </b-nav-item>
-                    <b-nav-item @click="$router.back()">
+                    <!-- <b-nav-item @click="$router.back()">
                         Zpět
-                    </b-nav-item>
+                    </b-nav-item> -->
                     <!--
                     <b-nav-form>
                         <b-form-input size="sm" class="mr-sm-2" type="text" placeholder="Search"/>

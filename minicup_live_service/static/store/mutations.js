@@ -1,5 +1,3 @@
-import camelCaseKeys from 'camelcase-keys'
-
 export default {
     setCategories(state, cats) {
         state.categories = cats;
@@ -51,6 +49,9 @@ export default {
     setFsmStateChangeListenerRegistered(state) {
         state.fsmStateChangeListenerRegistered = true;
     },
+    setServerTime(state, serverTime) {
+        state.serverTimeOffset = (new Date() / 1000) - serverTime;
+    },
     // WS related mutations
     SOCKET_ONOPEN(state, event) {
         state.socket.isConnected = true;
@@ -69,7 +70,6 @@ export default {
     },
     // default handler called for all methods
     SOCKET_ONMESSAGE(state, data) {
-        data = camelCaseKeys(data);
         state.lastData = data;
         if (_.has(data, 'event')) {
             this.commit('addEvent', data.event);
@@ -82,6 +82,9 @@ export default {
         }
         if (_.has(data, 'logged')) {
             this.commit('setLoggedIn', data.logged);
+        }
+        if (_.has(data, 'server_time')) {
+            this.commit('setServerTime', data.server_time);
         }
     },
     // mutations for reconnect methods

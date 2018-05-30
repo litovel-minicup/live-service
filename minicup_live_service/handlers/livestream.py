@@ -50,6 +50,7 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
             self.write_message(dict(
                 logged=True
             ))
+        self.write_message(dict())
 
     def on_close(self):
         logger.debug('CLOSE: {}'.format(self))
@@ -180,6 +181,13 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
         if not is_ok:
             logger.info('Location {} is not OK.'.format(loc))
         return is_ok
+
+    def write_message(self, message, *args, **kwargs):
+        if isinstance(message, dict):
+            message['server_time'] = datetime.now().timestamp()
+            message.setdefault('type_content', []).append(LiveService.MESSAGE_CONTENT_SERVER_TIME)
+
+        return super().write_message(message, *args, **kwargs)
 
     @classmethod
     def on_application_start(cls, _: Application):

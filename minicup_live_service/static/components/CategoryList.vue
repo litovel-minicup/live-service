@@ -31,12 +31,9 @@
                 <strong>Tento výběr prosím ještě jednou zkontroluj.</strong>
             </li>
             <li>
-                Se spuštěním časomíry na začátku obou poločasů zapni i časovač zde.
-            </li>
-            <li>
-                Během zápasu se staráš o dvě věci:
+                V rámci zápasu se staráš o dvě věci:
                 <ul>
-                    <li>Spuštění času na začátku obou poločasů - poté je vše autonomní až do přestávky.</li>
+                    <li>Spuštění času na začátku obou poločasů.</li>
                     <li>Zápis gólů dle jednotlivých střelců.</li>
                 </ul>
             </li>
@@ -50,7 +47,7 @@
                 <strong>Jestliže vypadne internet, zapisuj dále - ikonka v pravém horním rohu Ti ukáže, kdy dojde ke znovupřipojení. V případě, že internet nejde delší dobu (více jak poločas), přejdi na záložní papírové soupisky a dej o tom vědět organizátorům.</strong>
             </li>
             <li>
-                Po každém zápase samozřejmě i nadále platí potvrzení výsledku na samostatný papírek a podpisy vedoucích jako jejich souhlas s výsledkem.
+                Po každém zápase si nech potvrdit výsledek na samostatný papírek podpisy vedoucích jako jejich souhlas s výsledkem.
             </li>
 
             <li>

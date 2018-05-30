@@ -48,7 +48,7 @@
 </template>
 
 <script>
-    import {mapActions} from 'vuex';
+    import {mapActions, mapState} from 'vuex';
     import _ from 'lodash';
 
     export default {
@@ -67,6 +67,7 @@
             }
         },
         computed: {
+            ...mapState(['serverTimeOffset']),
             timeFormatted() {
                 return Math.floor(this.timerCount / 60).pad(2) + ':' + (this.timerCount % 60).pad(2);
             },
@@ -94,7 +95,7 @@
 
             this.timeoutID = setInterval(() => {
                 const start = this.match.second_half_start ? this.match.second_half_start : this.match.first_half_start;
-                this.timerCount = Math.floor(Number(Date.now() / 1000) - start);
+                this.timerCount = Math.floor(Date.now() / 1000 - start + this.serverTimeOffset);
 
                 if (
                     start != null &&

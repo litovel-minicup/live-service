@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class LiveService(object):
+    MESSAGE_CONTENT_SERVER_TIME = 'server_time'
     MESSAGE_CONTENT_MATCH = 'match'
     MESSAGE_CONTENT_MATCHES = 'matches'
     MESSAGE_CONTENT_EVENT = 'event'

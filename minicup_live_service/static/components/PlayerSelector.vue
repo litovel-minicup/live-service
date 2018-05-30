@@ -13,8 +13,8 @@
                         {{ player.number.pad(2) }}
                     </strong>
                     <strong class="mr-2">
-                        {{ player.surname }}
-                    </strong> {{ player.lastname }}
+                        {{ player.lastname }}
+                    </strong> {{ player.firstname }}
                 </span>
 
                 <b-button @click="goal(player.id)" variant="success">⚽</b-button>

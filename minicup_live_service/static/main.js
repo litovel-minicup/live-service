@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import VueNativeSock from 'vue-native-websocket'
 import BootstrapVue from 'bootstrap-vue'
 import {sync} from 'vuex-router-sync'
+import VueLoading from 'vue-loading-template'
 import VueResource from 'vue-resource'
 import Raven from 'raven-js';
 import RavenVue from 'raven-js/plugins/vue';
@@ -54,6 +55,12 @@ Vue.filter("onlineStateName", state => {
         'half_second': '2. poločas',
         'end': 'po zápase'
     }[state];
+});
+
+
+Vue.component('v-loading', {
+    template: '<vue-loading type="spin" color="#0e5eff" :size="{ width: \'100px\', height: \'100px\' }"></vue-loading>',
+    components: {VueLoading}
 });
 
 const app = new Vue({

@@ -24,6 +24,8 @@
             </b-list-group-item>
         </b-list-group>
 
+        <v-loading v-if="!nearestMatches.length"></v-loading>
+
         <b-btn type="primary" block @click="count += 10" class="mt-4" v-if="count < filtered.length">Načíst další</b-btn>
     </b-container>
 </template>

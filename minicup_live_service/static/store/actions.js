@@ -2,7 +2,8 @@ import Vue from "vue";
 
 export default {
     loadCategories(context) {
-        Vue.http.get('/api/category-list').then(response => {
+        this.commit('setCategories', []);
+        return Vue.http.get('/api/category-list').then(response => {
             this.commit('setCategories', response.body.categories);
             this.commit('setMatches', []);
         }, response => {
@@ -10,6 +11,7 @@ export default {
         });
     },
     loadMatches(context, {category}) {
+        this.commit('setMatches', []);
         Vue.http.get('/api/category/' + category.toString()).then(response => {
             this.commit('setMatches', response.body.matches);
             this.commit('setMatch', {});
@@ -54,6 +56,7 @@ export default {
     login({commit}, {pin}) {
         return Vue.http.post('/api/login', {pin}).then(response => {
             commit('setLoggedIn', !!response.body.success);
+            !!response.body.success && window.location.reload(true);
         }, response => {
             console.error('Login failed.')
         });

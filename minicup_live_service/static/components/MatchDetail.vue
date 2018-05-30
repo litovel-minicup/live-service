@@ -75,7 +75,7 @@
                 (state) => {
                     return state.socket.isConnected;
                 },
-                (old, new_) => {
+                (new_, old) => {
                     // plan match refresh && subscribe
                     !old && new_ && this.openMatch();
                 }

@@ -120,8 +120,8 @@ is_lose_threshold_difference_p = need_player(is_lose_threshold_difference)
 class MatchEventMessageGenerator(object):
     # ó
     MESSAGES = (
-        (nth_match_goals_fulfill_p(1), '{player} otevírá gólový účet tohoto zápasu!'),
-        (nth_match_goals_fulfill_p(1), '{player} poprvé rozvlnil sít v tomto zápase!'),
+        (nth_match_goals_fulfill_p(1), '{player} otevírá gólový účet týmu {team}!'),
+        (nth_match_goals_fulfill_p(1), '{player} poprvé rozvlnil{a} sít v tomto zápase!'),
         (nth_match_goals_fulfill_p(1), '{player} je úvodním střelcem svého týmu!'),
 
         (near_half_end_p, '{player} střílí gól do šatny!'),
@@ -138,8 +138,8 @@ class MatchEventMessageGenerator(object):
         (nth_player_goals_fulfill_p(1), 'I {player} se prosazuje!'),
         (nth_player_goals_fulfill_p(1), 'I {player} se přidává ke střelcům tohoto klání!'),
         (nth_player_goals_fulfill_p(5), '{player} předvádí své dovednosti pátou brankou!'),
-        (nth_player_goals_fulfill_p(5), 'Pátá branka v tomto utkání pro {player}!'),
-        (nth_player_goals_fulfill_p(8), 'Střeleckou slinu našel {player}!'),
+        (nth_player_goals_fulfill_p(5), 'Pátý úspěšný pokus předvádí {player}!'),
+        (nth_player_goals_fulfill_p(8), 'Střeleckou slinu nachází {player}!'),
         (nth_player_goals_fulfill_p(8), '{player} dnes pálí!'),
         (nth_player_goals_fulfill_p(10), 'Desátou brankou prokazuje {player} střeleckou formu!'),
         (nth_player_goals_fulfill_p(10), 'Střelec utkání {player} se prosazuje podesáté!'),
@@ -150,7 +150,7 @@ class MatchEventMessageGenerator(object):
         (match_score, 'Máme tu shodu skóre!'),
         (match_score, 'Tým {team} srovnává stav zápasu!'),
 
-        (is_lose_decrease_goal_p, '{player} snížil stav utkání!'),
+        (is_lose_decrease_goal_p, '{player} snížil{a} stav utkání!'),
         (is_lose_decrease_goal_p, '{player} snižuje gólový deficit svého týmu!'),
         (is_win_increase_goal_p, '{player} navyšuje stav utkání!'),
         (is_win_increase_goal_p, '{player} navyšuje vedení týmu {team}!'),
@@ -159,13 +159,12 @@ class MatchEventMessageGenerator(object):
         (lots_of_goals_p, 'Další branku tohoto utkání bohatého na góly přidává i {player}!'),
 
         (anywhere_p, '{player} se prosazuje!'),
-        (anywhere_p, 'Branku vsítil {player}!'),
-        (anywhere_p, 'Sít rozvlnil {player}!'),
+        (anywhere_p, 'Branku vsítil{a} {player}!'),
+        (anywhere_p, 'Sít rozvlnil{a} {player}!'),
         (anywhere_p, '{player} upravuje stav utkání!'),
-        (anywhere_p, '{player} to tam poslal!'),
-        (anywhere_p, '{player} se prosadil!'),
-        (anywhere_p, '{player} skóroval!'),
-        (anywhere_p, '{player} se přesvědčivě prosazuje!'),
+        (anywhere_p, '{player} to tam poslal{a}!'),
+        (anywhere_p, '{player} se prosadil{a}!'),
+        (anywhere_p, '{player} skóroval{a}!'),
         (anywhere_p, '{player} se přesvědčivě prosazuje!'),
 
         (anywhere, 'Tým {team} se prosadil.'),
@@ -179,7 +178,7 @@ class MatchEventMessageGenerator(object):
 
         (is_lose_threshold_difference_p, '{player} snižuje z pohledu {team}!'),
         (is_lose_threshold_difference_p, '{player} snižuje golový deficit týmu {team}!'),
-        (is_lose_threshold_difference_p, '{player} se snaží brankou zabránit debakl týmu {team}!'),
+        (is_lose_threshold_difference_p, '{player} se snaží brankou zabránit debaklu týmu {team}!'),
 
         (without_player_not_first, 'Další branka na účet tohoto utkání.'),
         (without_player_not_first, 'Ukazatel skóre se opět mění.'),
@@ -210,7 +209,8 @@ class MatchEventMessageGenerator(object):
             return choice(filtered).format(
                 player=player,
                 team=match_event.team_info,
-                opposite_team=tuple(set(match_event.match.teams) - {match_event.team_info})[0]
+                opposite_team=tuple(set(match_event.match.teams) - {match_event.team_info})[0],
+                a='a' if player and (player.surname.endswith('ová') or player.name.endswith('a')) else ''
             )
         return 'Změna stavu.'
 

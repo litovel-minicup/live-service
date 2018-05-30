@@ -12,6 +12,7 @@
                     </b-btn>
                 </b-col>
             </template>
+            <v-loading v-if="!categories.length"></v-loading>
         </b-row>
         <hr>
         <h1>Zápis online výsledků</h1>
@@ -64,7 +65,7 @@
 
     export default {
         name: "category-list",
-        computed: mapState(['categories']),
+        computed: mapState(['categories', 'socket']),
         methods: {
             setCategory(id) {
                 this.$router.push({name: 'category', params: {category: id}});
@@ -72,7 +73,16 @@
             ...mapActions(['loadCategories'])
         },
         created() {
-            this.loadCategories()
+            this.loadCategories();
+            this.$store.watch(
+                (state) => {
+                    return state.socket.isConnected;
+                },
+                (new_, old) => {
+                    // plan match refresh && subscribe
+                    !old && new_ && !this.categories.length && this.loadCategories();
+                }
+            );
         }
     }
 </script>

@@ -1,10 +1,10 @@
 <template>
     <div class="match-events">
         <transition-group name="flip-list" tag="ul" class="list-group">
-            <li
+            <b-list-group-item
                     v-for="event in sorted"
                     :key="event.id"
-                    class="list-group-item d-flex justify-content-between align-items-center"
+                    class="d-flex justify-content-between align-items-center"
             >
                 <span>
                     <b-badge>{{ event.half_index + 1}}/2 | {{ event.time_offset | prettyTime }}</b-badge>
@@ -13,10 +13,10 @@
                         (<strong>{{ event.score[0] }}:{{ event.score[1] }}</strong>)
                     </template>
                 </span>
-                <button type="button" class="btn btn-danger" v-if="canDelete(event)" @click="deleteEvent(event)">
+                <b-btn variant="danger" v-if="canDelete(event)" @click="deleteEvent(event)">
                     <span class="close">&times;</span>
-                </button>
-            </li>
+                </b-btn>
+            </b-list-group-item>
         </transition-group>
     </div>
 </template>
@@ -58,7 +58,7 @@
         },
         computed: {
             sorted() {
-                return _.reverse(_.sortBy(this.events, ['half_index'], ['time_offset']));
+                return _.reverse(_.sortBy(_.filter(this.events, (me) => me.match_id === this.match.id), ['half_index'], ['time_offset']));
             }
         },
         created() {

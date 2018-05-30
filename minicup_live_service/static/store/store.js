@@ -26,7 +26,8 @@ const store = new Vuex.Store({
 
         fsm: fsm,
 
-        loggedIn: false
+        loggedIn: false,
+        fsmStateChangeListenerRegistered: false,
     },
     actions,
     mutations,

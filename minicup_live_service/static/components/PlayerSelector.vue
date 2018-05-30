@@ -1,5 +1,5 @@
 <template>
-    <b-modal size="lg" id="modal" ref="modal" footer-class="d-none" header-class="d-none">
+    <b-modal size="lg" id="modal" ref="modal" footer-class="d-none" header-class="">
         <template slot="modal-title">Hráč z týmu <i>{{ name }}</i></template>
 
         <b-list-group class="players-list">

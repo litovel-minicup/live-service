@@ -34,14 +34,11 @@
     import MatchEvents from './MatchEvents'
     import PlayerSelector from './PlayerSelector'
     import {mapState} from 'vuex'
-    import _ from 'lodash'
 
     export default {
         name: "match-detail",
         data() {
-            return {
-
-            }
+            return {}
         },
         components: {
             MatchHeader,
@@ -60,8 +57,25 @@
             },
             loadMatch() {
                 this.$store.dispatch('openMatch', {match: this.$route.params.match});
+            },
+            registerFsmListener() {
+                if (this.$store.state.fsmStateChangeListenerRegistered) return;
+
+                console.log('Registered!');
+                this.$store.commit('setFsmStateChangeListenerRegistered');
+                this.$store.commit('connectFsmEvent', {
+                    event: 'change',
+                    cb: (ev, fsm) => {
+                        this.$store.dispatch('sendObj', {
+                            action: 'state_change',
+                            state: fsm.state,
+                            match: this.$store.state.match.id
+                        });
+                    }
+                });
             }
         },
+        registeredFsmListener: false,
         created() {
             this.loadMatch();
             // plan refresh after connection lost
@@ -77,18 +91,7 @@
             // connect state change of match
             // but only for first component.. not so clean solution, sorry
             // TODO: it's buggy, cannot be solved like this
-            //_.once(() => {
-                this.$store.commit('connectFsmEvent', {
-                    event: 'change',
-                    cb: (ev, fsm) => {
-                        this.$store.dispatch('sendObj', {
-                            action: 'state_change',
-                            state: fsm.state,
-                            match: this.$store.state.match.id
-                        });
-                    }
-                });
-            //});
+            this.registerFsmListener();
         }
     }
 </script>

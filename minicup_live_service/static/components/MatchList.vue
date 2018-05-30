@@ -1,8 +1,20 @@
 <template>
     <b-container>
-        <h1>Výběr zápasu</h1>
-        <b-list-group class="list-group">
-            <b-list-group-item href="#" class="row"
+        <h1>Výběr zápasu <b-btn v-if="location" class="mt-2 float-right" variant="warning" @click="location = ''">reset</b-btn></h1>
+        <b-row v-if="!location" >
+            <b-col v-for="k in locations" :key="k">
+                <b-btn
+                        block
+                        variant="primary"
+                        @click="location = k"
+                    >
+                    Hřiště {{ k }}
+                </b-btn>
+            </b-col>
+        </b-row>
+        <hr v-if="!location">
+        <b-list-group>
+            <b-list-group-item href="#"
                     @click="setMatch(m.id)"
                     v-for="m in nearestMatches"
                     :key="m.id"
@@ -12,7 +24,7 @@
             </b-list-group-item>
         </b-list-group>
 
-        <b-btn type="primary" block @click="count += 10" class="mt-4">Načíst další</b-btn>
+        <b-btn type="primary" block @click="count += 10" class="mt-4" v-if="count < filtered.length">Načíst další</b-btn>
     </b-container>
 </template>
 
@@ -24,24 +36,29 @@
         name: "match-list",
         computed: mapState({
             matches: 'matches',
+            filtered(state) {
+                return _.filter(state.matches, (match) => {
+                    return match.state !== 'end' && (!this.location || match.location === this.location);
+                })
+            },
             nearestMatches(state) {
                 return _.slice(this.filtered, 0, this.count)
             },
-            filtered(state) {
-                return _.filter(state.matches, (match) => {
-                    return match.state !== 'end';
-                })
-            }
+            locations(state) {
+                return _.uniq(_.map(this.nearestMatches, 'location'))
+            },
+            _: () => _
         }),
         data() {
             return {
-                count: 10
+                count: 10,
+                location: '',
             }
         },
         methods: {
             setMatch(id) {
                 this.$router.push({name: 'match', params: {match: id}});
-            }
+            },
         },
         created() {
             this.$store.dispatch('loadMatches', {category: this.$store.state.route.params.category});

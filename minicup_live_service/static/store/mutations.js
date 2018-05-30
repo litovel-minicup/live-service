@@ -48,6 +48,9 @@ export default {
     setLoggedIn(state, loggedIn) {
         state.loggedIn = loggedIn;
     },
+    setFsmStateChangeListenerRegistered(state) {
+        state.fsmStateChangeListenerRegistered = true;
+    },
     // WS related mutations
     SOCKET_ONOPEN(state, event) {
         state.socket.isConnected = true;

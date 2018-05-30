@@ -30,6 +30,9 @@
                 <strong>Tento výběr prosím ještě jednou zkontroluj.</strong>
             </li>
             <li>
+                Se spuštěním časomíry na začátku obou poločasů zapni i časovač zde.
+            </li>
+            <li>
                 Během zápasu se staráš o dvě věci:
                 <ul>
                     <li>Spuštění času na začátku obou poločasů - poté je vše autonomní až do přestávky.</li>

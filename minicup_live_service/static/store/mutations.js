@@ -12,7 +12,8 @@ export default {
     },
     setMatch(state, match) {
         state.match = {...state.match, ...match};
-        this.commit('doFsmAction', 'load_' + state.match.state);
+        if (state.fsm.state !== state.match.state)
+            this.commit('goToFsmState', state.match.state);
     },
     setEvents(state, events) {
         state.events = events
@@ -20,7 +21,6 @@ export default {
     addEvent(state, event) {
         state.events.unshift(event)
     },
-
     startTimer(state) {
         this.commit('doFsmAction', 'start');
     },
@@ -54,8 +54,10 @@ export default {
     // WS related mutations
     SOCKET_ONOPEN(state, event) {
         state.socket.isConnected = true;
-        let obj;
-        while (obj = state.socket.queue.pop()) {
+        let toSend = _.uniq(state.socket.queue), obj;
+        state.socket.queue = [];
+
+        while (obj = toSend.pop()) {
             this.$socket.sendObj(obj);
         }
     },

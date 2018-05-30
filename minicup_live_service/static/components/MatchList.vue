@@ -61,7 +61,7 @@
             },
         },
         created() {
-            this.$store.dispatch('loadMatches', {category: this.$store.state.route.params.category});
+            this.$store.dispatch('loadMatches', {category: this.$route.params.category});
         }
     }
 </script>

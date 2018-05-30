@@ -89,11 +89,18 @@ class LiveService(object):
         io_loop = IOLoop.current()
         for match in Match.objects.find_matches_with_required_timer():  # type: Match
             timer_end = ((match.second_half_start or match.first_half_start) + Match.HALF_LENGTH).timestamp()
-            logging.info('MATCH {}: Planning timer end in {}.'.format(match.pk, timer_end - io_loop.time()))
-            io_loop.call_at(
-                timer_end,
-                self._on_timer_end(notify_callback=notify_callback, match=match)
-            )
+            if timer_end > io_loop.time():
+                logging.info('MATCH {}: Planning timer end in {}.'.format(match.pk, timer_end - io_loop.time()))
+                io_loop.call_at(
+                    timer_end,
+                    self._on_timer_end(notify_callback=notify_callback, match=match)
+                )
+            else:
+                logging.info('MATCH {}: Executing timer end immediately with delay {}.'.format(
+                    match.pk,
+                    timer_end - io_loop.time()
+                ))
+                self._on_timer_end(notify_callback=notify_callback, match=match)()
 
     @staticmethod
     def _on_timer_end(notify_callback, match: Match):
@@ -123,9 +130,10 @@ class LiveService(object):
             match.score_home, match.score_away = 0, 0
 
         # TODO: move threshold to constant and with frontend propagation
-        if match.confirmed or datetime.now() > event.absolute_time + timedelta(seconds=60) or event.match.match_match_event.filter(
-            half_index=event.half_index,
-            time_offset__gt=event.time_offset
+        if match.confirmed or datetime.now() > event.absolute_time + timedelta(
+                seconds=60) or event.match.match_match_event.filter(
+                half_index=event.half_index,
+                time_offset__gt=event.time_offset
         ).exists():
             raise EventDeleteError(match=match)
 

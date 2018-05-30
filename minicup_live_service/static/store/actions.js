@@ -17,7 +17,7 @@ export default {
             // TODO: error
         });
     },
-    openMatch({dispatch}, {match}) {
+    openMatch({dispatch}, match = this.state.match.id) {
         dispatch('loadMatch', {match});
         dispatch('loadEvents', {match});
         dispatch('subscribeMatch', {match});
@@ -29,8 +29,15 @@ export default {
             }
         );
     },
+    unsubscribeMatch({dispatch}, {match}) {
+        dispatch('sendObj', {
+                action: 'unsubscribe',
+                match
+            }
+        );
+    },
     loadMatch(context, {match}) {
-        Vue.http.get('/api/match/' + match.toString()).then(response => {
+        return Vue.http.get('/api/match/' + match.toString()).then(response => {
             this.commit('setMatch', response.body);
             this.commit('goToFsmState', response.body.state);
         }, response => {
@@ -38,7 +45,7 @@ export default {
         });
     },
     loadEvents(context, {match}) {
-        Vue.http.get('/api/match-events/' + match.toString()).then(response => {
+        return Vue.http.get('/api/match-events/' + match.toString()).then(response => {
             context.commit('setEvents', response.body.events);
         }, response => {
             // TODO: error

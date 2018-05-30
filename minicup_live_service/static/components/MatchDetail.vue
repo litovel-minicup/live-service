@@ -33,7 +33,7 @@
     import MatchHeader from './MatchHeader'
     import MatchEvents from './MatchEvents'
     import PlayerSelector from './PlayerSelector'
-    import {mapState} from 'vuex'
+    import {mapActions, mapState} from 'vuex'
 
     export default {
         name: "match-detail",
@@ -52,16 +52,9 @@
             ]),
         },
         methods: {
-            goal({player, team}) {
-                this.$store.dispatch('goal', {player, team});
-            },
-            loadMatch() {
-                this.$store.dispatch('openMatch', {match: this.$route.params.match});
-            },
+            ...mapActions(['unsubscribeMatch', 'goal', 'openMatch']),
             registerFsmListener() {
                 if (this.$store.state.fsmStateChangeListenerRegistered) return;
-
-                console.log('Registered!');
                 this.$store.commit('setFsmStateChangeListenerRegistered');
                 this.$store.commit('connectFsmEvent', {
                     event: 'change',
@@ -75,9 +68,8 @@
                 });
             }
         },
-        registeredFsmListener: false,
         created() {
-            this.loadMatch();
+            this.openMatch(Number(this.$route.params.match));
             // plan refresh after connection lost
             this.$store.watch(
                 (state) => {
@@ -85,13 +77,15 @@
                 },
                 (old, new_) => {
                     // plan match refresh && subscribe
-                    !new_ && this.loadMatch();
+                    !old && new_ && this.openMatch();
                 }
             );
             // connect state change of match
             // but only for first component.. not so clean solution, sorry
-            // TODO: it's buggy, cannot be solved like this
             this.registerFsmListener();
+        },
+        beforeDestroy() {
+            this.unsubscribeMatch({match: this.match.id});
         }
     }
 </script>

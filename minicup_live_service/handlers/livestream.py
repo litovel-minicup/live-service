@@ -105,6 +105,11 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
             type_content=[LiveService.MESSAGE_CONTENT_MATCH]
         ))
 
+    def _process_unsubscribe(self, data):
+
+        match = Match.objects.get(pk=data.get('match'))
+        self.unsubscribe(self, match)
+
     def _process_subscribe_category(self, data):
         category = Category.objects.get(pk=data.get('category'))
         self.category_subscribers[category].add(self)

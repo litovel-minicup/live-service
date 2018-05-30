@@ -16,13 +16,15 @@
 
         <player-selector
                 ref="homeSelector"
-                @goal="goal({player: $event, team:match.home_team_id})"
+                @goal="goal({player: $event, team: match.home_team_id})"
+                v-on:goal="match.score[0]++"
                 :name="match.home_team_name"
                 :players="match.home_team_players"
         />
         <player-selector
                 ref="awaySelector"
-                @goal="goal({player: $event, team:match.away_team_id})"
+                @goal="goal({player: $event, team: match.away_team_id})"
+                v-on:goal="match.score[1]++"
                 :name="match.away_team_name"
                 :players="match.away_team_players"
         />

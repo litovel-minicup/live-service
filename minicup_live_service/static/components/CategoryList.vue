@@ -1,9 +1,23 @@
 <template>
     <b-container>
+        <b-row class="mt-2">
+            <template v-for="cat in categories">
+                <b-col :key="cat.id" cols="6">
+                    <b-btn
+                            variant="primary"
+                            block class="btn-score"
+                            @click="setCategory(cat.id)"
+                    >
+                        {{ cat.name }}
+                    </b-btn>
+                </b-col>
+            </template>
+        </b-row>
+        <hr>
         <h1>Zápis online výsledků</h1>
         <p class="lead">
             Zdravím,<br>
-            právě jsi se dostal do administrace živých přenosů na letošním turnaji Litovel MINICUP 2018. <br>
+            právě jsi v administraci živých přenosů na letošním turnaji Litovel MINICUP 2018. <br>
             Věnuj prosím chvíli následujícím pokynům:
         </p>
         <ul>
@@ -13,7 +27,7 @@
 
             <li>
                 Před začátkem zápasu si vyber kategorii a konkrétní zápas k zápisu.
-                <strong >Tento výběr prosím ještě jednou zkontroluj.</strong>
+                <strong>Tento výběr prosím ještě jednou zkontroluj.</strong>
             </li>
             <li>
                 Během zápasu se staráš o dvě věci:
@@ -31,25 +45,14 @@
             <li>
                 <strong>Jestliže vypadne internet, zapisuj dále - ikonka v pravém horním rohu Ti ukáže, kdy dojde ke znovupřipojení. V případě, že internet nejde delší dobu (více jak poločas), přejdi na záložní papírové soupisky a dej o tom vědět organizátorům.</strong>
             </li>
+            <li>
+                Po každém zápase samozřejmě i nadále platí potvrzení výsledku na samostatný papírek a podpisy vedoucích jako jejich souhlas s výsledkem.
+            </li>
 
             <li>
                 V případě problémů či nesrovnalostí neváhej kontaktovat tvůrce P. Koláře (<a href="tel:420777951637">+420 777 951 637</a>, <a href="https://www.facebook.com/kolar.joe">FB Joe Kolář</a>) pohybujícího se volně po turnaji, nejčastěji u stolku na hale.
             </li>
         </ul>
-        <hr>
-        <h2>Výběr kategorie</h2>
-        <div class="list-group">
-            <b-btn
-                    size="lg"
-                    variant="primary"
-                    block class="btn-score"
-                    @click="setCategory(cat.id)"
-                    v-for="cat in categories"
-                    :key="cat.id"
-            >
-                {{ cat.name }}
-            </b-btn>
-        </div>
     </b-container>
 </template>
 

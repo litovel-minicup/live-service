@@ -1,7 +1,10 @@
 # coding=utf-8
+import string
 from operator import itemgetter
 from random import choice
 from typing import Callable, Tuple
+
+from vokativ import vokativ
 
 from minicup_model.core.models import MatchEvent, Match, TeamInfo
 
@@ -166,6 +169,18 @@ class MatchEventMessageGenerator(object):
         (anywhere_p, '{player} se prosadil{a}!'),
         (anywhere_p, '{player} skóroval{a}!'),
         (anywhere_p, '{player} se přesvědčivě prosazuje!'),
+        (anywhere_p, 'Výborně teď {player} prostřelil{a} brankáře!'),
+        (anywhere_p, '{player} a úspěšná střela!'),
+
+        (anywhere_p, 'Výborně, {first_v}!'),
+        (anywhere_p, 'Pěkná branka, {first_v}!'),
+        (anywhere_p, 'Pěkná střela, {first_v}!'),
+        (anywhere_p, 'Pěkný gól, {first_v}!'),
+        (anywhere_p, 'Pěkně vyřešeno, {first_v}!'),
+        (anywhere_p, 'Excelentně, {first_v}!'),
+        (anywhere_p, 'Dobře jsi to vymyslela{a}, {first_v}!'),
+        (anywhere_p, 'Pěkně ses prosadil{a}, {first_v}!'),
+        (anywhere_p, 'Výborně jsi to vyřešil{a}, {first_v}!'),
 
         (anywhere, 'Tým {team} se prosadil.'),
         (anywhere, 'Branka na účet týmu {team}.'),
@@ -208,6 +223,7 @@ class MatchEventMessageGenerator(object):
         if filtered:
             return choice(filtered).format(
                 player=player,
+                first_v=string.capwords(vokativ(player.name)),
                 team=match_event.team_info,
                 opposite_team=tuple(set(match_event.match.teams) - {match_event.team_info})[0],
                 a='a' if player and (player.surname.endswith('ová') or player.name.endswith('a')) else ''

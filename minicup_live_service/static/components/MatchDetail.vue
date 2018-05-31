@@ -1,12 +1,12 @@
 <template>
-    <div class="container">
+    <b-container>
         <match-header
                 :match="match"
                 @homeGoal="$refs.homeSelector.show()"
                 @awayGoal="$refs.awaySelector.show()"
         />
 
-        <hr class="hr">
+        <hr>
 
         <div class="row mt-4 justify-content-center">
             <div class="col-12">
@@ -28,7 +28,7 @@
                 :name="match.away_team_name"
                 :players="match.away_team_players"
         />
-    </div>
+    </b-container>
 </template>
 
 <script>
@@ -57,10 +57,14 @@
             ...mapActions(['unsubscribeMatch', 'goal', 'openMatch']),
             registerFsmListener() {
                 if (this.$store.state.fsmStateChangeListenerRegistered) return;
+
                 this.$store.commit('setFsmStateChangeListenerRegistered');
                 this.$store.commit('connectFsmEvent', {
                     event: 'change',
                     cb: (ev, fsm) => {
+                        if (this.match.state === fsm.state)
+                            return;
+
                         this.$store.dispatch('sendObj', {
                             action: 'state_change',
                             state: fsm.state,

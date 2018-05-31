@@ -214,7 +214,8 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
                 match=match.serialize(),
                 events=[
                     e.serialize() for e in match.match_match_event.all()
-                ]
+                ],
+                type_content=[LiveService.MESSAGE_CONTENT_MATCH, LiveService.MESSAGE_CONTENT_EVENT],
             )
         )
 

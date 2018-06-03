@@ -16,7 +16,7 @@
                     {{ timeFormatted }}
                 </code>
                 <div class="display-4 pb-1" v-if="!isRunning && match.state !== 'end'">
-                    <b-btn variant="success" @click="startHalf()">START</b-btn>
+                    <b-btn variant="success" @click="start()">START</b-btn>
                 </div>
             </transition>
         </div>
@@ -44,6 +44,17 @@
                 </transition>
             </div>
         </div>
+
+        <b-modal
+                size="xs"
+                ref="modal"
+                @ok="startHalf"
+        >
+            <template slot="modal-ok">Spustit čas</template>
+            <template slot="modal-cancel">Ještě ne</template>
+            <template slot="modal-title">Potvrzení časomíry</template>
+            Opravdu chcete spustit časomíru? Spuštění časomíry je nevratné.
+        </b-modal>
     </div>
 </template>
 
@@ -61,7 +72,12 @@
                 canScore: false
             }
         },
-        methods: mapActions(['startHalf', 'endHalf']),
+        methods: {
+            ...mapActions(['startHalf', 'endHalf']),
+            start() {
+                this.$refs.modal.show();
+            }
+        },
         filters: {
             score(val) {
                 return val === null ? '-' : val;

@@ -124,7 +124,7 @@ class MatchEventMessageGenerator(object):
     # ó
     MESSAGES = (
         (nth_match_goals_fulfill_p(1), '{player} otevírá gólový účet týmu {team}!'),
-        (nth_match_goals_fulfill_p(1), '{player} poprvé rozvlnil{a} sít v tomto zápase!'),
+        (nth_match_goals_fulfill_p(1), '{player} poprvé rozvlnil{a} síť v tomto zápase!'),
         (nth_match_goals_fulfill_p(1), '{player} je úvodním střelcem svého týmu!'),
 
         (near_half_end_p, '{player} střílí gól do šatny!'),
@@ -146,7 +146,10 @@ class MatchEventMessageGenerator(object):
         (nth_player_goals_fulfill_p(8), '{player} dnes pálí!'),
         (nth_player_goals_fulfill_p(10), 'Desátou brankou prokazuje {player} střeleckou formu!'),
         (nth_player_goals_fulfill_p(10), 'Střelec utkání {player} se prosazuje podesáté!'),
+        (nth_player_goals_fulfill_p(10), '{player} ukazuje svoji exelentní střeleckou formu desátou brankou!'),
         (nth_player_goals_fulfill_p(15), 'Výbornou formu má dnes {player}!'),
+        (nth_player_goals_fulfill_p(15), 'Čepice dolů, {player} střílí svou patnáctou branku v tomto utkání!'),
+        (nth_player_goals_fulfill_p(15), 'Fantazie, {player} střílí svou patnáctou branku v tomto utkání!'),
 
         (match_score_p, 'Střela a {player} vyrovnává stav utkání!'),
         (match_score_p, '{player} srovnává stav tohoto utkání!'),
@@ -163,7 +166,7 @@ class MatchEventMessageGenerator(object):
 
         (anywhere_p, '{player} se prosazuje!'),
         (anywhere_p, 'Branku vsítil{a} {player}!'),
-        (anywhere_p, 'Sít rozvlnil{a} {player}!'),
+        (anywhere_p, 'Síť rozvlnil{a} {player}!'),
         (anywhere_p, '{player} upravuje stav utkání!'),
         (anywhere_p, '{player} to tam poslal{a}!'),
         (anywhere_p, '{player} se prosadil{a}!'),
@@ -171,16 +174,19 @@ class MatchEventMessageGenerator(object):
         (anywhere_p, '{player} se přesvědčivě prosazuje!'),
         (anywhere_p, 'Výborně teď {player} prostřelil{a} brankáře!'),
         (anywhere_p, '{player} a úspěšná střela!'),
-
         (anywhere_p, 'Výborně, {first_v}!'),
         (anywhere_p, 'Pěkná branka, {first_v}!'),
         (anywhere_p, 'Pěkná střela, {first_v}!'),
         (anywhere_p, 'Pěkný gól, {first_v}!'),
         (anywhere_p, 'Pěkně vyřešeno, {first_v}!'),
         (anywhere_p, 'Excelentně, {first_v}!'),
-        (anywhere_p, 'Dobře jsi to vymyslela{a}, {first_v}!'),
+        (anywhere_p, 'Dobře jsi to vymyslel{a}, {first_v}!'),
         (anywhere_p, 'Pěkně ses prosadil{a}, {first_v}!'),
         (anywhere_p, 'Výborně jsi to vyřešil{a}, {first_v}!'),
+        (anywhere_p, 'Tak tohle se ti povedlo, {first_v}!'),
+        (anywhere_p, 'Velmi dobře, {first_v}!'),
+        (anywhere_p, 'Pěkně jsi to tam poslal{a}, {first_v}!'),
+        (anywhere_p, 'Výborně vystřeleno, {first_v}!'),
 
         (anywhere, 'Tým {team} se prosadil.'),
         (anywhere, 'Branka na účet týmu {team}.'),
@@ -223,7 +229,7 @@ class MatchEventMessageGenerator(object):
         if filtered:
             return choice(filtered).format(
                 player=player,
-                first_v=string.capwords(vokativ(player.name)),
+                first_v=string.capwords(vokativ(player.name)) if player else '',
                 team=match_event.team_info,
                 opposite_team=tuple(set(match_event.match.teams) - {match_event.team_info})[0],
                 a='a' if player and (player.surname.endswith('ová') or player.name.endswith('a')) else ''

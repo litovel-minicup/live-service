@@ -54,8 +54,9 @@ class LiveService(object):
             time_offset=min((int((now() - half_start).total_seconds()), Match.HALF_LENGTH.total_seconds())),
             half_index=starts.index(half_start)
         )
-        match_event.message = self.match_event_message_generator.generate(match_event=match_event)
         match_event.save()
+        match_event.message = self.match_event_message_generator.generate(match_event=match_event)
+        match_event.save(update_fields=['message', ])
         match.score_home, match.score_away = scores
         match.save()
 
@@ -133,8 +134,8 @@ class LiveService(object):
         # TODO: move threshold to constant and with frontend propagation
         if match.confirmed or datetime.now() > event.absolute_time + timedelta(
                 seconds=60) or event.match.match_match_event.filter(
-                half_index=event.half_index,
-                time_offset__gt=event.time_offset
+            half_index=event.half_index,
+            time_offset__gt=event.time_offset
         ).exists():
             raise EventDeleteError(match=match)
 

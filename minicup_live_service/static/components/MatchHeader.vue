@@ -28,7 +28,7 @@
         <div class="row no-gutters mt-2 d-flex align-items-center justify-content-center">
             <div class="col text-right display-4">
                 <transition name="scale-out">
-                    <b-btn v-if="isRunning" size="lg" variant="primary" block class="btn-score" @click="$emit('homeGoal')">
+                    <b-btn v-if="canScore" size="lg" variant="primary" block class="btn-score" @click="$emit('homeGoal')">
                         +1
                     </b-btn>
                 </transition>
@@ -38,7 +38,7 @@
             </div>
             <div class="col display-4">
                 <transition name="scale-out">
-                    <b-btn v-if="isRunning" size="lg" variant="warning" block class="btn-score" @click="$emit('awayGoal')">
+                    <b-btn v-if="canScore" size="lg" variant="warning" block class="btn-score" @click="$emit('awayGoal')">
                         +1
                     </b-btn>
                 </transition>
@@ -57,7 +57,8 @@
         data() {
             return {
                 timerCount: 0,
-                timeoutID: -1
+                timeoutID: -1,
+                canScore: false
             }
         },
         methods: mapActions(['startHalf', 'endHalf']),
@@ -73,6 +74,16 @@
             },
             isRunning() {
                 return _.includes(['half_first', 'half_second'], this.match.state)
+            }
+        },
+        watch: {
+            isRunning(new_, old) {
+                !new_ && old && _.delay(() => {
+                    if (!this.isRunning)
+                        this.canScore = false;
+                }, 1000 * 15);
+
+                !old && new_ && (this.canScore = true);
             }
         },
         created() {
@@ -92,6 +103,7 @@
                     this.$emit('stopTimer');
                 },
             }); */
+            this.canScore = this.isRunning;
 
             this.timeoutID = setInterval(() => {
                 const start = this.match.second_half_start ? this.match.second_half_start : this.match.first_half_start;

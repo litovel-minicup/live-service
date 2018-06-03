@@ -41,6 +41,9 @@
                 Když se spleteš ve střelci, nevadí, poslední branku je možné smazat do minuty od jejího zadání. Správného střelce poté zadáš standardní cestou.
             </li>
             <li>
+                Branku na konci poločasu lze zapsat do 15 sekund od jeho konce.
+            </li>
+            <li>
                 V případě, že jsi neviděl střelce/není na soupisce, použij výchozího střelce s názvem <i>Neznámý hráč</i>.
             </li>
             <li>

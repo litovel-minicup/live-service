@@ -12,11 +12,15 @@ export default {
     },
     setMatch(state, match) {
         state.match = {...state.match, ...match};
-        if (state.fsm.state !== state.match.state)
-            this.commit('goToFsmState', state.match.state);
     },
     setEvents(state, events) {
         state.events = events
+    },
+    setHomeTeamInfo(state, homeTeamInfo) {
+        state.homeTeamInfo = homeTeamInfo
+    },
+    setAwayTeamInfo(state, awayTeamInfo) {
+        state.awayTeamInfo = awayTeamInfo
     },
     addEvent(state, event) {
         state.events.unshift(event)

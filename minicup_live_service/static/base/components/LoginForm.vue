@@ -1,7 +1,7 @@
 <template>
     <form @submit.prevent="send">
-        <img src="../assets/logo.svg" alt="Logo Litovel MINICUP">
-        <h1>živé přenosy</h1>
+        <img src="./../../assets/logo.svg" alt="Logo Litovel MINICUP">
+        <h1>{{ title }}</h1>
         <label>
             <input
                     v-model="pin"
@@ -22,6 +22,12 @@
 <script>
     export default {
         name: "login-form",
+        props: {
+            title: {
+                type: String,
+                default: 'Živé přenosy'
+            }
+        },
         methods: {
             send() {
                 this.$store.dispatch('login', {

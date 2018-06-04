@@ -3,9 +3,11 @@
         <transition-group name="fade">
             <div v-if="loggedIn" key="isNotLoggedIn">
                 <b-container>
-                    <match-selector :match.sync="match"></match-selector>
-                    {{ match.name }}
-
+                    <match-selector @change="openMatch($event.id)"></match-selector>
+                    <hr>
+                    <transition name="fade">
+                        <match-overview v-if="match.id"></match-overview>
+                    </transition>
                 </b-container>
             </div>
             <div v-else key="isLoggedIn">
@@ -29,25 +31,23 @@
     import Spinner from './components/Spinner'
     import MatchSelector from './components/MatchSelector'
     import LoginForm from './../base/components/LoginForm'
-    import {mapState} from 'vuex'
+    import {mapActions, mapState} from 'vuex'
+    import MatchOverview from "./components/MatchOverview";
 
     export default {
         name: 'app',
         components: {
+            MatchOverview,
             Spinner,
             LoginForm,
             MatchSelector
         },
-        data() {
-            return {
-                match: {}
-            }
-        },
+        methods: mapActions(['openMatch']),
         computed: {
             hasConnectionProblem() {
                 return this.$store.state.socket.reconnectError || !this.$store.state.socket.isConnected;
             },
-            ...mapState(['loggedIn'])
+            ...mapState(['loggedIn', 'match'])
         },
     }
 </script>

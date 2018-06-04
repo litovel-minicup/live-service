@@ -78,11 +78,6 @@
                 this.$refs.modal.show();
             }
         },
-        filters: {
-            score(val) {
-                return val === null ? '-' : val;
-            }
-        },
         computed: {
             ...mapState(['serverTimeOffset']),
             timeFormatted() {

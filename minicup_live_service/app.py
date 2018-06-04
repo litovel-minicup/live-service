@@ -13,7 +13,8 @@ from tornado.options import parse_command_line, options, define
 from tornado.web import Application, StaticFileHandler, FallbackHandler
 from tornado.wsgi import WSGIContainer
 
-from minicup_live_service.handlers.api import CategoryListHandler, MatchListHandler, MatchHandler, MatchEventsHandler
+from minicup_live_service.handlers.api import CategoryListHandler, MatchListHandler, MatchHandler, MatchEventsHandler, \
+    TeamDetailHandler
 from minicup_live_service.handlers.base import BaseHandler, ApplicationStartHandlerMixin
 from minicup_live_service.handlers.login import LoginHandler, LogoutHandler
 from minicup_live_service.handlers.main import MatchOverviewHandler
@@ -36,6 +37,7 @@ class Application(Application):
         (r'/api/category/(\d+)', MatchListHandler),
         (r'/api/match/(\d+)', MatchHandler),
         (r'/api/match-events/(\d+)', MatchEventsHandler),
+        (r'/api/team-detail/(\d+)', TeamDetailHandler),
 
         (r'/api/login', LoginHandler),
         (r'/api/logout', LogoutHandler),

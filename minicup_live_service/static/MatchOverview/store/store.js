@@ -19,6 +19,14 @@ const store = new Vuex.Store({
         match: {
             score: [0, 0],
         },
+        homeTeamInfo: {
+            players: [],
+            matches: [],
+        },
+        awayTeamInfo: {
+            players: [],
+            matches: [],
+        },
 
         loggedIn: false,
         serverTimeOffset: 0

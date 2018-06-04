@@ -38,10 +38,24 @@ export default {
             }
         );
     },
-    loadMatch(context, {match}) {
+    loadMatch({dispatch}, {match}) {
         return Vue.http.get('/api/match/' + match.toString()).then(response => {
             this.commit('setMatch', response.body);
-            this.commit('goToFsmState', response.body.state);
+            dispatch('loadTeamInfo', {
+                mutation: 'setHomeTeamInfo',
+                team: response.body.home_team_id
+            }) ;
+            dispatch('loadTeamInfo', {
+                mutation: 'setAwayTeamInfo',
+                team: response.body.away_team_id
+            })
+        }, response => {
+            // TODO: error
+        });
+    },
+    loadTeamInfo({dispatch}, {team, mutation}) {
+        return Vue.http.get('/api/team-detail/' + team.toString()).then(response => {
+            this.commit(mutation, response.body);
         }, response => {
             // TODO: error
         });

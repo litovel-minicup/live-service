@@ -3,12 +3,19 @@
         <transition-group name="fade">
             <div v-if="loggedIn" key="isNotLoggedIn">
                 <b-container>
-                    <match-selector @change="openMatch($event.id)"></match-selector>
-                    <hr>
+                    <transition name="fade">
+                        <match-selector @change="openMatch($event.id)" v-if="!match.id"></match-selector>
+                    </transition>
+                    <hr v-if="!match.id">
+                    <b-btn v-if="match.id" class="mt-2 float-right" variant="warning" @click="resetMatch()">&times;</b-btn>
+
                     <transition name="fade">
                         <match-overview v-if="match.id"></match-overview>
                     </transition>
                 </b-container>
+                <page-footer>
+                    <a href="/">přenosy</a>
+                </page-footer>
             </div>
             <div v-else key="isLoggedIn">
                 <b-container>
@@ -28,27 +35,39 @@
 </template>
 
 <script>
-    import Spinner from './components/Spinner'
+    import Spinner from './../base/components/Spinner'
     import MatchSelector from './components/MatchSelector'
     import LoginForm from './../base/components/LoginForm'
-    import {mapActions, mapState} from 'vuex'
+    import {mapActions, mapState, mapMutations} from 'vuex'
     import MatchOverview from "./components/MatchOverview";
+    import PageFooter from "../base/components/Footer";
 
     export default {
         name: 'app',
         components: {
+            PageFooter,
             MatchOverview,
             Spinner,
             LoginForm,
             MatchSelector
         },
-        methods: mapActions(['openMatch']),
+        data() {
+            return {matchId: 0}
+        },
+        methods: {
+            ...mapActions(['openMatch']),
+            ...mapMutations(['resetMatch']),
+        },
         computed: {
             hasConnectionProblem() {
                 return this.$store.state.socket.reconnectError || !this.$store.state.socket.isConnected;
             },
             ...mapState(['loggedIn', 'match'])
         },
+        created() {
+            if (window.location.hash)
+                this.openMatch(window.location.hash.slice(1))
+        }
     }
 </script>
 

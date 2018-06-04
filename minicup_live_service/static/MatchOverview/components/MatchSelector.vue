@@ -1,8 +1,18 @@
 <template>
     <div>
         <b-row class="mt-2">
-            <b-col v-for="category in categories" :key="category.id">
-                <b-btn block size="lg" @click="loadMatches({category: category.id})">{{ category.name }}</b-btn>
+            <b-col
+                    v-for="category_ in categories"
+                    :key="category_.id"
+            >
+                <b-btn
+                        block
+                        size="lg"
+                        @click="category = category_; loadMatches({category: category_.id})"
+                        :variant="category_.id === category.id ? 'primary' : 'secondary' "
+                >
+                    {{ category_.name }}
+                </b-btn>
             </b-col>
         </b-row>
         <transition name="fade">
@@ -16,6 +26,7 @@
                 </b-col>
             </b-row>
         </transition>
+        <v-loading v-if="category.id && !matches.length"></v-loading>
     </div>
 </template>
 
@@ -27,7 +38,8 @@
         name: "MatchSelector",
         data() {
             return {
-                match: {}
+                match: {},
+                category: {}
             }
         },
         methods: {

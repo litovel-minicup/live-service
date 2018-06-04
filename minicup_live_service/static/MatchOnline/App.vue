@@ -6,6 +6,9 @@
                 <transition name="fade" mode="out-in">
                     <router-view key="router"/>
                 </transition>
+                <page-footer>
+                    <a href="/overview">přehledy</a>
+                </page-footer>
             </div>
             <div v-else key="isLoggedIn">
                 <b-container>
@@ -25,14 +28,16 @@
 </template>
 
 <script>
-    import Spinner from './components/Spinner'
+    import Spinner from './../base/components/Spinner'
     import LoginForm from './../base/components/LoginForm'
     import Navigation from './components/Navigation'
     import {mapState} from 'vuex'
+    import PageFooter from "../base/components/Footer";
 
     export default {
         name: 'app',
         components: {
+            PageFooter,
             Spinner,
             LoginForm,
             Navigation,
@@ -57,20 +62,6 @@
         top: 0;
     }
 
-    .particles {
-
-        position: absolute;
-        top: 1em;
-        bottom: 1em;
-        left: 1em;
-        right: 1em;
-    }
-
-    .btn-score {
-        padding: 25px;
-        font-size: 2.25rem;
-    }
-
     html {
         height: 100%;
         overflow: hidden;
@@ -80,55 +71,5 @@
         height: 100%;
         overflow: auto;
         overflow-y: scroll !important;
-    }
-
-    .fade-enter-active, .fade-leave-active {
-        transition-property: opacity;
-        transition-duration: .2s;
-    }
-
-    .fade-enter-active {
-        transition-delay: .2s;
-    }
-
-    .fade-enter, .fade-leave-active {
-        opacity: 0
-    }
-
-    .slide-top-enter-active {
-        animation: bounce-in .5s;
-    }
-
-    .slide-top-leave-active {
-        animation: bounce-in .5s reverse;
-    }
-
-    .scale-out-enter-active {
-        animation: scale-out 300ms;
-    }
-
-    .scale-out-leave-active {
-        animation: scale-out 300ms reverse;
-    }
-
-    @keyframes bounce-in {
-        0% {
-            transform: translate(0, -500px);
-        }
-        100% {
-            transform: translate(0, 0);
-        }
-    }
-
-    @keyframes scale-out {
-        0% {
-            transform: scale(0, 0);
-        }
-        80% {
-            transform: scale(1.2, 1.2);
-        }
-        100% {
-            transform: scale(1, 1);
-        }
     }
 </style>

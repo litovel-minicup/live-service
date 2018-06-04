@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import Vue from './../base/base'
 import VueRouter from 'vue-router'
 import VueNativeSock from 'vue-native-websocket'
 import BootstrapVue from 'bootstrap-vue'

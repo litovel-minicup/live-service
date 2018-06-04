@@ -9,7 +9,7 @@
         </h1>
         <div class="clear"></div>
         <b-row>
-            <b-col v-for="team in [homeTeamInfo, awayTeamInfo]">
+            <b-col v-for="team in [homeTeamInfo, awayTeamInfo]" :key="team.id">
                 <h2>{{ team.name }}</h2>
                 <team-detail :team="team"></team-detail>
             </b-col>
@@ -31,7 +31,7 @@
             timeFormatted() {
                 return '00:00'
             }
-        },
+        }
     }
 </script>
 

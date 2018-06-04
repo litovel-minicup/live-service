@@ -23,6 +23,7 @@ export default {
         dispatch('loadMatch', {match});
         dispatch('loadEvents', {match});
         dispatch('subscribeMatch', {match});
+        window.location.hash = match;
     },
     subscribeMatch({dispatch}, {match}) {
         dispatch('sendObj', {

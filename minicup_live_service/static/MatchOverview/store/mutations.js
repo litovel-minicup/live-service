@@ -13,6 +13,10 @@ export default {
     setMatch(state, match) {
         state.match = {...state.match, ...match};
     },
+    resetMatch(state) {
+        state.match.id = 0;
+        window.location.hash = '';
+    },
     setEvents(state, events) {
         state.events = events
     },

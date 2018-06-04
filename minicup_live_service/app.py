@@ -16,7 +16,8 @@ from tornado.wsgi import WSGIContainer
 from minicup_live_service.handlers.api import CategoryListHandler, MatchListHandler, MatchHandler, MatchEventsHandler
 from minicup_live_service.handlers.base import BaseHandler, ApplicationStartHandlerMixin
 from minicup_live_service.handlers.login import LoginHandler, LogoutHandler
-from .handlers import LiveStreamHandler, MainHandler
+from minicup_live_service.handlers.main import MatchOverviewHandler
+from .handlers import LiveStreamHandler, MatchOnlineHandler
 
 if settings.SENTRY_DSN:
     BaseHandler.__bases__ = (SentryMixin,) + BaseHandler.__bases__
@@ -40,7 +41,8 @@ class Application(Application):
         (r'/api/logout', LogoutHandler),
 
         (r'/admin.*', FallbackHandler, dict(fallback=wsgi_app)),
-        (r'/', MainHandler),
+        (r'/overview', MatchOverviewHandler),
+        (r'/', MatchOnlineHandler),
     ]
 
     def __init__(self):

@@ -4,11 +4,14 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 
 module.exports = {
-    entry: ['bootstrap-loader', './minicup_live_service/static/main.js'],
+    entry: {
+        MatchOnline: ['./minicup_live_service/static/MatchOnline/main.js', 'bootstrap-loader'],
+        MatchOverview: ['./minicup_live_service/static/MatchOverview/main.js', 'bootstrap-loader'],
+    },
     output: {
         path: path.resolve(__dirname, 'minicup_live_service/static/build/'),
         publicPath: '/static/build/',
-        filename: 'build.js'
+        filename: '[name].build.js'
     },
     module: {
         rules: [

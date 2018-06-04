@@ -2,10 +2,11 @@
     <div>
         <transition-group name="fade">
             <div v-if="loggedIn" key="isNotLoggedIn">
-                <navigation key="navigation"/>
-                <transition name="fade" mode="out-in">
-                    <router-view key="router"/>
-                </transition>
+                <b-container>
+                    <match-selector :match.sync="match"></match-selector>
+                    {{ match.name }}
+
+                </b-container>
             </div>
             <div v-else key="isLoggedIn">
                 <b-container>
@@ -26,8 +27,8 @@
 
 <script>
     import Spinner from './components/Spinner'
-    import LoginForm from './components/LoginForm'
-    import Navigation from './components/Navigation'
+    import MatchSelector from './components/MatchSelector'
+    import LoginForm from './../base/components/LoginForm'
     import {mapState} from 'vuex'
 
     export default {
@@ -35,7 +36,12 @@
         components: {
             Spinner,
             LoginForm,
-            Navigation,
+            MatchSelector
+        },
+        data() {
+            return {
+                match: {}
+            }
         },
         computed: {
             hasConnectionProblem() {

@@ -6,15 +6,13 @@
             </b-card-header>
             <b-collapse :id="uniq(1, team.id)" visible :accordion="uniq(0)" role="tabpanel">
                 <b-card-body>
-                    <b-row class="font-weight-bold h4">
-                        <b-col>{{ team.points }} b</b-col>
-                        <b-col class="text-center">{{ team.order }}.</b-col>
-                        <b-col cols="6" class="text-right">
-                            {{ team.scored }}:{{ team.received }}
-                            ({{ (team.scored - team.received) > 0 ? '+' + (team.scored - team.received).toString() : (team.scored - team.received) }})
-                        </b-col>
-                    </b-row>
-                    {{ team.trainer_name }} <span class="float-right">{{ team.dress_color }}</span>
+                    <span class="font-weight-bold h5">
+                        {{ team.points }} b,
+                        {{ team.order }}.
+                        {{ team.scored }}:{{ team.received }}
+                        ({{ (team.scored - team.received) > 0 ? '+' + (team.scored - team.received).toString() : (team.scored - team.received) }})
+                    </span>
+                    <span class="float-right">{{ team.trainer_name }}<template v-if="team.trainer_name || team.dress_color">, </template>{{ team.dress_color }}</span>
                 </b-card-body>
             </b-collapse>
         </b-card>
@@ -27,7 +25,10 @@
                 <b-list-group flush>
                     <b-list-group-item class="list-group-item-compact" v-for="player in team.players" :key="player.id">
                         <code>{{ player.number.pad(2) }}</code> {{ player.name }}
-                        <b-badge class="float-right">{{ player.goals_count }}</b-badge>
+                        <span class="float-right">
+                            <b-badge variant="primary">{{ player.match_goals }}</b-badge>
+                            <b-badge>{{ player.total_goals }}</b-badge>
+                        </span>
                     </b-list-group-item>
                 </b-list-group>
             </b-collapse>
@@ -41,10 +42,10 @@
                 <b-list-group flush>
                     <b-list-group-item class="list-group-item-compact" v-for="match in team.matches" :key="match.id">
                         <template v-if="match.home_team_id === team.id">
-                            {{ match.score[0] | score }}:{{ match.score[1] | score }} {{ match.away_team_name }}
+                            <strong>{{ match.score[0] | score }}:{{ match.score[1] | score }}</strong> {{ match.away_team_name }}
                         </template>
                         <template v-else>
-                            {{ match.score[1] | score }}:{{ match.score[0] | score }} {{ match.home_team_name }}
+                            <strong>{{ match.score[1] | score }}:{{ match.score[0] | score }}</strong> {{ match.home_team_name }}
                         </template>
                         <span class="font-italic small float-right" v-if="!match.confirmed">
                             (nepotvrzeno)

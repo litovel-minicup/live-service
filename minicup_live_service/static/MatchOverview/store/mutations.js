@@ -18,16 +18,41 @@ export default {
         window.location.hash = '';
     },
     setEvents(state, events) {
-        state.events = events
+        state.events = events;
+        this.commit('refreshMatchGoals', 'homeTeamInfo');
+        this.commit('refreshMatchGoals', 'awayTeamInfo');
     },
     setHomeTeamInfo(state, homeTeamInfo) {
-        state.homeTeamInfo = homeTeamInfo
+        state.homeTeamInfo = homeTeamInfo;
+        this.commit('refreshMatchGoals', 'homeTeamInfo');
     },
     setAwayTeamInfo(state, awayTeamInfo) {
-        state.awayTeamInfo = awayTeamInfo
+        state.awayTeamInfo = awayTeamInfo;
+        this.commit('refreshMatchGoals', 'awayTeamInfo');
     },
     addEvent(state, event) {
-        state.events.unshift(event)
+        state.events.unshift(event);
+
+        if (event.type === 'goal' && event.player_id) {
+            const found = _.filter(_.concat(
+                state.homeTeamInfo.players,
+                state.awayTeamInfo.players,
+            ), (p) => p.id === event.player_id);
+            if (_.isEmpty(found)) return;
+
+            found[0].match_goals++;
+            found[0].total_goals++;
+        }
+    },
+    refreshMatchGoals(state, teamProp) {
+        let p;
+        for (p of state[teamProp].players) {
+            p.match_goals = _.size(_.filter(
+                state.events,
+                (me) => me.type === 'goal' && me.player_id === p.id
+            ));
+        }
+
     },
 
 

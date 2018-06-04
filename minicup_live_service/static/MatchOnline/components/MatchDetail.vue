@@ -33,7 +33,7 @@
 
 <script>
     import MatchHeader from './MatchHeader'
-    import MatchEvents from './MatchEvents'
+    import MatchEvents from './../../base/components/MatchEvents'
     import PlayerSelector from './PlayerSelector'
     import {mapActions, mapState} from 'vuex'
 

@@ -27,6 +27,7 @@ const store = new Vuex.Store({
             players: [],
             matches: [],
         },
+        events: [],
 
         loggedIn: false,
         serverTimeOffset: 0

@@ -24,7 +24,21 @@
 <script>
     export default {
         name: "match-events",
-        props: ['match', 'events'],
+        props: {
+            match: {
+                type: Object,
+                required: true,
+            },
+            events: {
+                type: Array,
+                required: true,
+            },
+            deletable: {
+                type: Boolean,
+                required: false,
+                default: true,
+            }
+        },
         filters: {
             prettyTime(secs) {
                 secs = Number(secs);
@@ -44,6 +58,7 @@
         methods: {
             canDelete(event) {
                 if (event.type !== 'goal') return false;
+                if (!this.deletable) return false;
                 // TODO: threshold to live service API
                 const last = this.sorted[0];
                 return this.time < (new Date(event.absolute_time * 1000 + 60 * 1000)) && last.id === event.id;

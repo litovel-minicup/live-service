@@ -58,9 +58,10 @@ class TeamDetailHandler(AuthenticatedBaseHandler):
             received=team.received,
             players=[
                 p.serialize(
-                    goals_count=p.match_event_player.filter(
+                    total_goals=p.match_event_player.filter(
                         type=MatchEvent.TYPE_GOAL
-                    ).count()
+                    ).count(),
+                    match_goals=0,
                 ) for p in team_info.team_info_player.all()
             ],
             matches=[

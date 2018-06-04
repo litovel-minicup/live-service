@@ -22,7 +22,7 @@
         </div>
         <div class="row justify-content-center">
             <div class="col text-center display-5">
-                {{ match.state | onlineStateName }}
+                {{ match.category_name }}, {{ match.state | onlineStateName }}
             </div>
         </div>
         <div class="row no-gutters mt-2 d-flex align-items-center justify-content-center">

@@ -2,12 +2,12 @@
     <div>
         <transition-group name="fade">
             <div v-if="loggedIn" key="isNotLoggedIn">
-                <b-container>
+                <b-btn v-if="match.id" class="mt-2 ml-2 float-left" variant="warning" @click="resetMatch()">&times;</b-btn>
+                <b-container fluid>
                     <transition name="fade">
                         <match-selector @change="openMatch($event.id)" v-if="!match.id"></match-selector>
                     </transition>
                     <hr v-if="!match.id">
-                    <b-btn v-if="match.id" class="mt-2 float-right" variant="warning" @click="resetMatch()">&times;</b-btn>
 
                     <transition name="fade">
                         <match-overview v-if="match.id"></match-overview>
@@ -55,8 +55,7 @@
             return {matchId: 0}
         },
         methods: {
-            ...mapActions(['openMatch']),
-            ...mapMutations(['resetMatch']),
+            ...mapActions(['openMatch', 'resetMatch']),
         },
         computed: {
             hasConnectionProblem() {
@@ -74,6 +73,7 @@
 <style lang="scss">
     body {
         overflow-y: scroll;
+        padding-bottom: 60px;
     }
 
     .spinner {

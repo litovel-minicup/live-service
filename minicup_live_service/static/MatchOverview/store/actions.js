@@ -45,7 +45,7 @@ export default {
             dispatch('loadTeamInfo', {
                 mutation: 'setHomeTeamInfo',
                 team: response.body.home_team_id
-            }) ;
+            });
             dispatch('loadTeamInfo', {
                 mutation: 'setAwayTeamInfo',
                 team: response.body.away_team_id
@@ -83,27 +83,9 @@ export default {
             console.error('Logout failed.')
         });
     },
-    startHalf({commit}) {
-        commit('startTimer');
-    },
-    endHalf({commit}) {
-        commit('stopTimer');
-    },
-
-    goal({dispatch, state}, {player, team}) {
-        dispatch('sendObj', {
-            action: 'goal',
-            match: state.match.id,
-            player,
-            team,
-        });
-    },
-    deleteEvent({dispatch, state}, event) {
-        dispatch('sendObj', {
-            action: 'delete_event',
-            match: state.match.id,
-            event: event.id,
-        });
+    resetMatch({dispatch, commit}) {
+        dispatch('unsubscribeMatch', {match: this.state.match.id});
+        commit('resetMatch');
     },
     sendObj({state, commit}, obj) {
         if (state.socket.isConnected) {

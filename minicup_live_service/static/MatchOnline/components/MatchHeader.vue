@@ -48,10 +48,10 @@
         <b-modal
                 size="xs"
                 ref="modal"
-                @ok="startHalf"
+                @ok="startHalf(); canScore = true;"
         >
-            <template slot="modal-ok">Spustit čas</template>
-            <template slot="modal-cancel">Ještě ne</template>
+            <template slot="modal-ok">SPUSTIT</template>
+            <template slot="modal-cancel">NE</template>
             <template slot="modal-title">Potvrzení časomíry</template>
             Opravdu chcete spustit časomíru? Spuštění časomíry je nevratné.
         </b-modal>
@@ -87,16 +87,6 @@
                 return _.includes(['half_first', 'half_second'], this.match.state)
             }
         },
-        watch: {
-            isRunning(new_, old) {
-                !new_ && old && _.delay(() => {
-                    if (!this.isRunning)
-                        this.canScore = false;
-                }, 1000 * 15);
-
-                !old && new_ && (this.canScore = true);
-            }
-        },
         created() {
             /* this.$store.commit('connectFsmEvent', {
                 event: '@start',
@@ -115,10 +105,11 @@
                 },
             }); */
             this.canScore = this.isRunning;
-
             this.timeoutID = setInterval(() => {
                 const start = this.match.second_half_start ? this.match.second_half_start : this.match.first_half_start;
                 this.timerCount = Math.floor(Date.now() / 1000 - start + this.serverTimeOffset);
+
+                this.canScore = this.isRunning || (this.timerCount < this.match.half_length + 15);
 
                 if (
                     start != null &&

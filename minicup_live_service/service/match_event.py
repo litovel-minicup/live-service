@@ -187,11 +187,13 @@ class MatchEventMessageGenerator(object):
         (anywhere_p, 'Velmi dobře, {first_v}!'),
         (anywhere_p, 'Pěkně jsi to tam poslal{a}, {first_v}!'),
         (anywhere_p, 'Výborně vystřeleno, {first_v}!'),
+        (anywhere_p, 'Pěkně jsi to trefil, {first_v}!'),
 
         (anywhere, 'Tým {team} se prosadil.'),
         (anywhere, 'Branka na účet týmu {team}.'),
         (anywhere, 'Brankář týmu {opposite_team} překonán.'),
-        (anywhere, 'Tým {opposite_team} obdržel branku.'),
+        (anywhere, 'Tým {team} skóruje.'),
+        (anywhere, 'Tým {team} se trefil.'),
 
         (is_win_threshold_difference_p, '{player} potvrzuje vedení týmu {team}!'),
         (is_win_threshold_difference_p, '{player} potvrzuje vysokou převahu týmu {team}!'),

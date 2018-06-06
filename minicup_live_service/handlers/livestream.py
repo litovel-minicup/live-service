@@ -3,9 +3,7 @@ import logging
 from collections import defaultdict
 from datetime import datetime
 from typing import DefaultDict, Set
-from urllib.parse import urlparse
 
-from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.db.models import QuerySet
@@ -13,10 +11,10 @@ from tornado.escape import json_decode
 from tornado.web import Application
 from tornado.websocket import WebSocketHandler
 
-from minicup_live_service.exceptions import EventDeleteError
-from minicup_live_service.handlers.base import ApplicationStartHandlerMixin
-from minicup_live_service.service.live import LiveService
 from minicup_model.core.models import Match, Category, MatchTerm, TeamInfo
+from .base import ApplicationStartHandlerMixin, BaseWebsocketHandler
+from ..exceptions import EventDeleteError
+from ..service.live import LiveService
 
 logger = logging.getLogger(__name__)
 
@@ -34,10 +32,7 @@ def check_user(fc):
     return _
 
 
-class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
-    # enable compression
-    get_compression_options = lambda self: {}
-
+class LiveStreamHandler(ApplicationStartHandlerMixin, BaseWebsocketHandler):
     live_service = LiveService()
 
     match_subscribers = defaultdict(set)  # type: DefaultDict[Match, Set[WebSocketHandler]]
@@ -168,26 +163,6 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, WebSocketHandler):
             team=team.id,
             type_content=[LiveService.MESSAGE_CONTENT_TEAM_PLAYERS]
         ))
-
-    def check_origin(self, origin):
-        loc = urlparse(origin).netloc  # type: str
-        is_ok = (
-                loc in settings.WS_ALLOWED_ORIGINS or
-                loc.startswith('localhost') or
-                loc.startswith('127.') or
-                loc.startswith('192.') or
-                loc.startswith('10.')
-        )
-        if not is_ok:
-            logger.info('Location {} is not OK.'.format(loc))
-        return is_ok
-
-    def write_message(self, message, *args, **kwargs):
-        if isinstance(message, dict):
-            message['server_time'] = datetime.now().timestamp()
-            message.setdefault('type_content', []).append(LiveService.MESSAGE_CONTENT_SERVER_TIME)
-
-        return super().write_message(message, *args, **kwargs)
 
     @classmethod
     def on_application_start(cls, _: Application):

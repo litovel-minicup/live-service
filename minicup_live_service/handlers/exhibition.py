@@ -2,13 +2,12 @@
 from datetime import datetime, timedelta
 from json import loads
 
-from tornado.websocket import WebSocketHandler
-
-from minicup_live_service.service.live import LiveService
 from minicup_model.core.models import TeamInfo, Match, Category, MatchTerm, Day
+from .base import BaseWebsocketHandler
+from ..service.live import LiveService
 
 
-class ExhibitionLiveStreamHandler(WebSocketHandler):
+class ExhibitionLiveStreamHandler(BaseWebsocketHandler):
     subs = set()
 
     day = Day.objects.filter(

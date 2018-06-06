@@ -6,13 +6,22 @@
             </b-card-header>
             <b-collapse :id="uniq(1, team.id)" visible :accordion="uniq(0)" role="tabpanel">
                 <b-card-body>
-                    <span class="font-weight-bold h5">
-                        {{ team.points }} b,
-                        {{ team.order }}.
-                        {{ team.scored }}:{{ team.received }}
-                        ({{ (team.scored - team.received) > 0 ? '+' + (team.scored - team.received).toString() : (team.scored - team.received) }})
-                    </span>
-                    <span class="float-right">{{ team.trainer_name }}<template v-if="team.trainer_name || team.dress_color">, </template>{{ team.dress_color }}</span>
+                    <b-row>
+                        <b-col class="font-weight-bold h5" cols="5">
+                            {{ team.points }} b,
+                            {{ team.order }}.
+                            {{ team.scored }}:{{ team.received }}
+                            ({{ (team.scored - team.received) > 0 ? '+' + (team.scored - team.received).toString() : (team.scored - team.received) }})
+                        </b-col>
+                        <b-col class="text-right">
+                            {{ team.trainer_name }}<template v-if="team.trainer_name || team.dress_color">, </template>{{ team.dress_color }}
+                        </b-col>
+                    </b-row>
+
+                    <hr class="clear">
+                    <div v-html="
+                        (team.description || '').trim().replace(/(\S+:)/g, '<strong>$1</strong>').replace(/(?:\r\n|\r|\n)/g, '<br>')
+                    "></div>
                 </b-card-body>
             </b-collapse>
         </b-card>

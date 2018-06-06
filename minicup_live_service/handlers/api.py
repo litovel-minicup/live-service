@@ -56,6 +56,7 @@ class TeamDetailHandler(AuthenticatedBaseHandler):
             order=team.order,
             scored=team.scored,
             received=team.received,
+            description=team_info.description,
             players=[
                 p.serialize(
                     total_goals=p.match_event_player.filter(

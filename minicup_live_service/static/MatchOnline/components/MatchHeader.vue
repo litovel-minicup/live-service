@@ -47,7 +47,7 @@
 
         <b-modal
                 size="xs"
-                ref="modal"
+                ref="startConfirmModal"
                 @ok="startHalf(); canScore = true;"
         >
             <template slot="modal-ok">SPUSTIT</template>
@@ -75,7 +75,7 @@
         methods: {
             ...mapActions(['startHalf', 'endHalf']),
             start() {
-                this.$refs.modal.show();
+                this.$refs.startConfirmModal.show();
             }
         },
         computed: {

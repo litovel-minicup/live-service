@@ -1,10 +1,8 @@
 # coding=utf-8
 import os.path
-from datetime import timedelta
 from os.path import dirname
 
 from django.conf import settings
-from django.core.handlers.wsgi import WSGIHandler
 from django.core.wsgi import get_wsgi_application
 from raven.contrib.tornado import SentryMixin, AsyncSentryClient
 from tornado import autoreload
@@ -16,8 +14,9 @@ from tornado.wsgi import WSGIContainer
 from minicup_live_service.handlers.api import CategoryListHandler, MatchListHandler, MatchHandler, MatchEventsHandler, \
     TeamDetailHandler
 from minicup_live_service.handlers.base import BaseHandler, ApplicationStartHandlerMixin
+from minicup_live_service.handlers.exhibition import ExhibitionLiveStreamHandler
 from minicup_live_service.handlers.login import LoginHandler, LogoutHandler
-from minicup_live_service.handlers.main import MatchOverviewHandler
+from minicup_live_service.handlers.main import MatchOverviewHandler, ExhibitionHandler
 from .handlers import LiveStreamHandler, MatchOnlineHandler
 
 if settings.SENTRY_DSN:
@@ -32,6 +31,7 @@ class Application(Application):
         (r'/static/(.*)', StaticFileHandler, {'path': os.path.join(dirname(__file__), 'static')}),
 
         (r'/ws/live', LiveStreamHandler),
+        (r'/ws/exhibition', ExhibitionLiveStreamHandler),
 
         (r'/api/category-list', CategoryListHandler),
         (r'/api/category/(\d+)', MatchListHandler),
@@ -43,6 +43,7 @@ class Application(Application):
         (r'/api/logout', LogoutHandler),
 
         (r'/admin.*', FallbackHandler, dict(fallback=wsgi_app)),
+        (r'/exhibition', ExhibitionHandler),
         (r'/overview', MatchOverviewHandler),
         (r'/', MatchOnlineHandler),
     ]

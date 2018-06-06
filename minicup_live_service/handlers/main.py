@@ -11,3 +11,8 @@ class MatchOnlineHandler(tornado.web.RequestHandler):
 class MatchOverviewHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('match_overview.html', v=settings.SERVER_STARTED.timestamp() if not settings.DEBUG else '')
+
+
+class ExhibitionHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render('exhibition.html', v=settings.SERVER_STARTED.timestamp() if not settings.DEBUG else '')

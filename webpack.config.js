@@ -7,6 +7,7 @@ module.exports = {
     entry: {
         MatchOnline: ['./minicup_live_service/static/MatchOnline/main.js', 'bootstrap-loader'],
         MatchOverview: ['./minicup_live_service/static/MatchOverview/main.js', 'bootstrap-loader'],
+        Exhibition: ['./minicup_live_service/static/Exhibition/main.js', 'bootstrap-loader'],
     },
     output: {
         path: path.resolve(__dirname, 'minicup_live_service/static/build/'),

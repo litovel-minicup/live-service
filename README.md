@@ -34,6 +34,15 @@ Tornado server used for distributing live results from matches - all database ch
       lastname: "Hai Nguyen"
 }
 ```
+### Team
+```javascript
+{
+      id: 42,
+      trainer_name: "Son Hai Nguyen",
+      name: "Team Foo",
+      dress_color: "red",
+}
+```
 
 ## Static REST
 
@@ -74,7 +83,6 @@ Returns player rosters for match.
 }
 ```
 
-
 ### `GET /api/match-events/<ID>`
 Returns all events for match, sorted asc by time.
 ```javascript
@@ -82,3 +90,19 @@ Returns all events for match, sorted asc by time.
   events: [MatchEvent, MatchEvent, ...]
 }
 ```
+
+### `GET /api/team-detail/<ID>`
+Returns more details for team.
+```javascript
+{
+  **Team,
+  points: 25,
+  order: 1,
+  scored: 25,
+  received: 85,
+  description: "Team trained by ..., good pre-season results....",
+  players: [{**Player, total_goals: 25}, ...],
+  matches: [Match, Match, ....]
+}
+```
+

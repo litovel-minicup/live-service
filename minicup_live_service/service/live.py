@@ -18,6 +18,7 @@ class LiveService(object):
     MESSAGE_CONTENT_MATCHES = 'matches'
     MESSAGE_CONTENT_EVENT = 'event'
     MESSAGE_CONTENT_TEAM_PLAYERS = 'team_players'
+    MESSAGE_CONTENT_CATEGORY_TABLE = 'category_table'
 
     match_event_message_generator = MatchEventMessageGenerator()
 

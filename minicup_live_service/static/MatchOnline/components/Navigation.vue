@@ -59,7 +59,7 @@
 
 <style scoped lang="scss">
     .navbar {
-        background-color: #4180ff;
+        background-color: #00339a;
         .nav-link, .navbar-brand {
             color: white;
         }

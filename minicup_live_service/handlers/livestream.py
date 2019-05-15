@@ -6,7 +6,7 @@ from typing import DefaultDict, Set
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Count, Q, Prefetch
 from tornado.escape import json_decode
 from tornado.web import Application
 from tornado.websocket import WebSocketHandler
@@ -162,6 +162,54 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, BaseWebsocketHandler):
             ],
             team=team.id,
             type_content=[LiveService.MESSAGE_CONTENT_TEAM_PLAYERS]
+        ))
+
+    def _process_fetch_category_table(self, data):
+        category = Category.objects.get(pk=data.get('category'))
+        teams = category.team_info_category.get_queryset().order_by('order').prefetch_related(
+            Prefetch('match_away_team_info', queryset=Match.objects.filter(confirmed__isnull=False, category=category)),
+            Prefetch('match_home_team_info', queryset=Match.objects.filter(confirmed__isnull=False, category=category)),
+        )
+
+        def counts(team: TeamInfo):
+            # TODO: not tested
+            matches = tuple(team.match_home_team_info.all()) + tuple(team.match_away_team_info.all())
+            return dict(
+                wins=len(
+                    tuple(filter(
+                        lambda match: (match.home_team_info == team and match.home_score > match.away_score) or
+                                      match.home_score < match.away_score,
+                        matches,
+                    )),
+                ),
+                loses=len(
+                    tuple(filter(
+                        lambda match: (match.home_team_info == team and match.home_score < match.away_score) or
+                                      match.home_score > match.away_score,
+                        matches,
+                    )),
+                ),
+                draws=len(
+                    tuple(filter(
+                        lambda match: match.home_score == match.away_score,
+                        matches,
+                    )),
+                ),
+            )
+
+        self.write_message(dict(
+            category_table=[
+                team.serialize(
+                    points=team.points,
+                    order=team.order,
+                    scored=team.scored,
+                    received=team.received,
+                    **counts(team=team),
+                )
+                for team
+                in teams
+            ],
+            type_content=[LiveService.MESSAGE_CONTENT_CATEGORY_TABLE]
         ))
 
     @classmethod

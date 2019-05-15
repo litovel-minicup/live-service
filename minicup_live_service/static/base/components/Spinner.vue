@@ -36,7 +36,7 @@
 
 <style scoped lang="scss">
     $color: white;
-    $secondary: #4180ff;
+    $secondary: #00339a;
 
     .spinner.invert {
         .cube .cube__item:before {

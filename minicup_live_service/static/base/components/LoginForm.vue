@@ -53,7 +53,7 @@
 
 <style scoped lang="scss">
     form {
-        background-color: #4180ff;
+        background-color: #00339a;
         padding: 3em;
         text-align: center;
         font-variant-caps: all-petite-caps;

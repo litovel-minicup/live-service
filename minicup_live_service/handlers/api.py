@@ -17,6 +17,15 @@ class CategoryListHandler(AuthenticatedBaseHandler):
 
 class MatchListHandler(AuthenticatedBaseHandler):
     def get(self, category_id):
+        matches = Match.objects.filter(
+            category_id=category_id,
+            confirmed__isnull=True,
+        )
+        if not matches.exists():
+            matches = Match.objects.filter(
+                category_id=category_id,
+            )
+
         self.write(dict(matches=[
             dict(
                 id=m.id,
@@ -24,10 +33,7 @@ class MatchListHandler(AuthenticatedBaseHandler):
                 date=str(m.match_term),
                 location=m.match_term.location,
                 state=m.online_state
-            ) for m in Match.objects.filter(
-                category_id=category_id,
-                confirmed__isnull=True,
-            )
+            ) for m in matches
         ]))
 
 

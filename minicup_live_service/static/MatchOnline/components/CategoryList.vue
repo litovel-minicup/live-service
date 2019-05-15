@@ -18,7 +18,7 @@
         <h1>Zápis online výsledků</h1>
         <p class="lead">
             Zdravím,<br>
-            právě jsi v administraci živých přenosů na letošním turnaji Litovel MINICUP 2018. <br>
+            právě jsi v administraci živých přenosů na letošním turnaji Litovel MINICUP. <br>
             Věnuj prosím chvíli následujícím pokynům:
         </p>
         <ul>

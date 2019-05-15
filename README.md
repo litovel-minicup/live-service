@@ -2,9 +2,9 @@
 
 Tornado server used for distributing live results from matches - all database changes are performed via Django models of MINICUP defined in `litovel-minicup-model` package.
 
-## API
-### Standard types
-#### MatchEvent
+# API
+## Standard types
+### MatchEvent
 ```javascript
 {
   id: 42,
@@ -24,7 +24,7 @@ Tornado server used for distributing live results from matches - all database ch
   player_number: 25,
 }
 ```
-#### Player
+### Player
 ```javascript
 {
       id: 42,
@@ -35,9 +35,9 @@ Tornado server used for distributing live results from matches - all database ch
 }
 ```
 
-### Static REST
+## Static REST
 
-#### `GET /api/category-list`
+### `GET /api/category-list`
 Returns all categories with unconfirmed matches.
 ```javascript
 {
@@ -48,7 +48,7 @@ Returns all categories with unconfirmed matches.
 }
 ```
 
-#### `GET /api/category/<ID>`
+### `GET /api/category/<ID>`
 Returns all unconfirmed matches in category (in case of non existing unconfirmed returns all matches in category).
 ```javascript
 {
@@ -65,7 +65,7 @@ Returns all unconfirmed matches in category (in case of non existing unconfirmed
 }
 ```
 
-#### `GET /api/match/<ID>`
+### `GET /api/match/<ID>`
 Returns player rosters for match.
 ```javascript
 {
@@ -75,7 +75,7 @@ Returns player rosters for match.
 ```
 
 
-#### `GET /api/match-events/<ID>`
+### `GET /api/match-events/<ID>`
 Returns all events for match, sorted asc by time.
 ```javascript
 {

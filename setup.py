@@ -25,9 +25,9 @@ def setup():
         author_email='thejoeejoee@gmail.com',
         packages=find_packages(),
         install_requires=[
-            'tornado',
+            'tornado==5.0.2',
             'vokativ',
-            'gunicorn',
+            'gunicorn==19.8.1',
             'raven',
         ],
         entry_points={

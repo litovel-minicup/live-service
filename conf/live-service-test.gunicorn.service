@@ -1,0 +1,27 @@
+[Unit]
+Description=Litovel MINICUP live service - TESTING.
+After=network.target
+
+[Service]
+PIDFile=/var/www/html/live-service-test/pid
+Environment="DJANGO_SETTINGS_MODULE=settings"
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/html/live-service-test/
+ExecStart=/var/www/html/live-service-test/.venv/bin/gunicorn \
+            --pid /var/www/html/live-service-test/pid \
+            -k tornado \
+            --capture-output \
+            --graceful-timeout 5 \
+            --log-level DEBUG \
+            --disable-redirect-access-to-syslog \
+            --access-logfile /var/www/html/live-service-test/log/g-access.log \
+            --error-logfile /var/www/html/live-service-test/log/g-error.log \
+            --log-file /var/www/html/live-service-test/log/g-log.log \
+            --bind unix:/var/www/html/live-service-test/live-service.sock \
+            minicup_live_service.app:app
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target

@@ -11,8 +11,8 @@ class ExhibitionLiveStreamHandler(BaseWebsocketHandler):
     subs = set()
 
     day = Day.objects.filter(
-        year__slug='2018',
-        day=datetime(2018, 6, 8).date()
+        year__slug='2019',
+        day=datetime(2019, 5, 31).date()
     ).first()
 
     category = Category(
@@ -25,7 +25,7 @@ class ExhibitionLiveStreamHandler(BaseWebsocketHandler):
     match_term = MatchTerm(
         id=1,
         day=day,
-        start=datetime(2018, 6, 8, 18, 45)
+        start=datetime(2019, 5, 31, 19, 00)
     )
 
     home = TeamInfo(
@@ -33,13 +33,19 @@ class ExhibitionLiveStreamHandler(BaseWebsocketHandler):
         category=category,
         name='Tatran Litovel',
         abbr='LIT',
+        slug='tatran-litovel',
+        color_primary='#0d5499',
+        color_secondary='#FFFFFF',
     )
 
     away = TeamInfo(
         id=2,
         category=category,
         name='Výběr trenérů a rozhodčích',
-        abbr='TREN',
+        abbr='MC',
+        slug='litovel-minicup',
+        color_primary='#00359e',
+        color_secondary='#FFFFFF',
     )
 
     match = Match(

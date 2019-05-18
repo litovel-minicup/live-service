@@ -6,12 +6,12 @@ from typing import DefaultDict, Set
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from django.db.models import QuerySet, Count, Q, Prefetch
+from django.db.models import QuerySet, Count, Q, Prefetch, F, OuterRef, Subquery, ForeignKey
 from tornado.escape import json_decode
 from tornado.web import Application
 from tornado.websocket import WebSocketHandler
 
-from minicup_model.core.models import Match, Category, MatchTerm, TeamInfo
+from minicup_model.core.models import Match, Category, MatchTerm, TeamInfo, Team
 from .base import ApplicationStartHandlerMixin, BaseWebsocketHandler
 from ..exceptions import EventDeleteError
 from ..service.live import LiveService
@@ -166,32 +166,35 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, BaseWebsocketHandler):
 
     def _process_fetch_category_table(self, data):
         category = Category.objects.get(pk=data.get('category'))
-        teams = category.team_info_category.get_queryset().order_by('order').prefetch_related(
+
+        team_join = Team.objects.filter(actual=True, team_info=OuterRef('pk'))[:1]
+        teams = category.team_info_category.get_queryset().annotate(
+            order=Subquery(team_join.values('order'))
+        ).order_by('order').prefetch_related(
             Prefetch('match_away_team_info', queryset=Match.objects.filter(confirmed__isnull=False, category=category)),
             Prefetch('match_home_team_info', queryset=Match.objects.filter(confirmed__isnull=False, category=category)),
         )
 
         def counts(team: TeamInfo):
-            # TODO: not tested
             matches = tuple(team.match_home_team_info.all()) + tuple(team.match_away_team_info.all())
             return dict(
                 wins=len(
                     tuple(filter(
-                        lambda match: (match.home_team_info == team and match.home_score > match.away_score) or
-                                      match.home_score < match.away_score,
+                        lambda match: (match.home_team_info == team and match.score_home > match.score_away) or
+                                      match.score_home < match.score_away,
                         matches,
                     )),
                 ),
                 loses=len(
                     tuple(filter(
-                        lambda match: (match.home_team_info == team and match.home_score < match.away_score) or
-                                      match.home_score > match.away_score,
+                        lambda match: (match.home_team_info == team and match.score_home < match.score_away) or
+                                      match.score_home > match.score_away,
                         matches,
                     )),
                 ),
                 draws=len(
                     tuple(filter(
-                        lambda match: match.home_score == match.away_score,
+                        lambda match: match.score_home == match.score_away,
                         matches,
                     )),
                 ),
@@ -200,10 +203,11 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, BaseWebsocketHandler):
         self.write_message(dict(
             category_table=[
                 team.serialize(
-                    points=team.points,
-                    order=team.order,
-                    scored=team.scored,
-                    received=team.received,
+                    points=team.team.points,
+                    order=team.team.order,
+                    scored=team.team.scored,
+                    received=team.team.received,
+                    slug=team.slug,
                     **counts(team=team),
                 )
                 for team

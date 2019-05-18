@@ -44,7 +44,7 @@ deploy-test-live-service: minicup_live_service/
 	# npm run build
 	.venv/bin/python setup.py sdist
 	scp dist/* minicup:/tmp/deploy
-	ssh minicup /var/www/html/live-service-test/.venv/bin/pip install /tmp/deploy/*
+	ssh minicup /var/www/html/live-service-test/.venv/bin/pip install --upgrade /tmp/deploy/*
 
 	scp conf/live-service-test.gunicorn.service minicup:/etc/systemd/system/
 	ssh minicup systemctl daemon-reload;
@@ -60,7 +60,7 @@ deploy-test-model:
 	ssh minicup rm -rf /tmp/deploy/*
 	ssh minicup mkdir -p /tmp/deploy/
 	scp dist/* minicup:/tmp/deploy/
-	ssh minicup /var/www/html/live-service-test/.venv/bin/pip install /tmp/deploy/*
+	ssh minicup /var/www/html/live-service-test/.venv/bin/pip install --upgrade /tmp/deploy/*
 
 restart-test:
 	ssh minicup systemctl restart live-service-test.gunicorn.service;

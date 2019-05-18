@@ -1,11 +1,11 @@
 <template>
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-6 text-right team-name" :title="match.home_team_name" :style="{ borderBottomColor: match.home_team_color }">
+            <div class="col-6 text-right team-name" :title="match.home_team_name" :style="{ borderBottomColor: match.home_team_color_primary }">
                 {{ match.home_team_name }}
                 <small class="dress-color font-weight-light text-muted" v-if="match.home_team_color_name">({{ match.home_team_color_name }})</small>
             </div>
-            <div class="col-6 team-name" :title="match.away_team_name" :style="{ borderBottomColor: match.away_team_color }">
+            <div class="col-6 team-name" :title="match.away_team_name" :style="{ borderBottomColor: match.away_team_color_primary }">
                 {{ match.away_team_name }}
                 <small class="dress-color font-weight-light text-muted" v-if="match.away_team_color_name">({{ match.away_team_color_name }})</small>
             </div>

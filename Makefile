@@ -43,6 +43,7 @@ deploy-test-live-service: minicup_live_service/
 	test -d dist || rm -rf dist/*
 	# npm run build
 	.venv/bin/python setup.py sdist
+	ssh minicup rm -rf /tmp/deploy/*
 	scp dist/* minicup:/tmp/deploy
 	ssh minicup /var/www/html/live-service-test/.venv/bin/pip install --upgrade /tmp/deploy/*
 

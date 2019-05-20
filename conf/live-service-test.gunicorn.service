@@ -12,7 +12,7 @@ ExecStart=/var/www/html/live-service-test/.venv/bin/gunicorn \
             --pid /var/www/html/live-service-test/pid \
             -k tornado \
             --capture-output \
-            --graceful-timeout 5 \
+            --graceful-timeout 15 \
             --log-level DEBUG \
             --disable-redirect-access-to-syslog \
             --access-logfile /var/www/html/live-service-test/log/g-access.log \

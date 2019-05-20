@@ -33,7 +33,7 @@ def setup():
         entry_points={
             'console_scripts': [
                 'litovel-minicup-live-service=minicup_live_service.app:main',
-                'litovel-minicup-live-service-manage=minicup_model.manage',
+                'litovel-minicup-live-service-manage=minicup_model.manage:manage',
             ],
         },
         include_package_data=True,

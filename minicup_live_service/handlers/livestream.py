@@ -208,6 +208,8 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, BaseWebsocketHandler):
                     scored=team.team.scored,
                     received=team.team.received,
                     slug=team.slug,
+                    color_primary=team.color_primary,
+                    color_secondary=team.color_secondary,
                     **counts(team=team),
                 )
                 for team

@@ -11,7 +11,7 @@ from tornado.escape import json_decode
 from tornado.web import Application
 from tornado.websocket import WebSocketHandler
 
-from minicup_model.core.models import Match, Category, MatchTerm, TeamInfo, Team
+from minicup_model.core.models import Match, Category, MatchTerm, TeamInfo, Team, MatchEvent
 from .base import ApplicationStartHandlerMixin, BaseWebsocketHandler
 from ..exceptions import EventDeleteError
 from ..service.live import LiveService
@@ -156,7 +156,11 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, BaseWebsocketHandler):
         team = TeamInfo.objects.get(pk=data.get('team'))
         self.write_message(dict(
             players=[
-                p.serialize()
+                p.serialize(
+                    total_goals=p.match_event_player.filter(
+                        type=MatchEvent.TYPE_GOAL
+                    ).count()
+                )
                 for p
                 in team.team_info_player.all()
             ],
@@ -210,6 +214,7 @@ class LiveStreamHandler(ApplicationStartHandlerMixin, BaseWebsocketHandler):
                     slug=team.slug,
                     color_primary=team.color_primary,
                     color_secondary=team.color_secondary,
+                    color_text=team.color_text,
                     **counts(team=team),
                 )
                 for team

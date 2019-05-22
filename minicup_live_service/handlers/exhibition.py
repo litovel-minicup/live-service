@@ -36,6 +36,7 @@ class ExhibitionLiveStreamHandler(BaseWebsocketHandler):
         slug='tatran-litovel',
         color_primary='#0d5499',
         color_secondary='#FFFFFF',
+        color_text='#0d5499',
     )
 
     away = TeamInfo(
@@ -46,6 +47,7 @@ class ExhibitionLiveStreamHandler(BaseWebsocketHandler):
         slug='litovel-minicup',
         color_primary='#00359e',
         color_secondary='#FFFFFF',
+        color_text='#00359e',
     )
 
     match = Match(

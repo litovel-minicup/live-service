@@ -1,6 +1,6 @@
 raven
 tornado==5.0
-Django==2.2.13
+Django==2.2.24
 mysqlclient
 vokativ
 django-extensions
